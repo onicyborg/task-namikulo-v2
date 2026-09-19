@@ -530,7 +530,7 @@
         });
 
         function deleteData(id) {
-            swal.fire({title: 'Apakah anda yakin??', text: "Anda tidak dapat mengembalikan ini !!", icon: "warning", showCancelButton: true, confirmButtonText: 'Hapus!', cancelButtonText: 'Batal', confirmButtonClass: 'btn btn-danger mr-3', cancelButtonClass: 'btn btn-secondary', buttonsStyling: false}).then(function(result) {
+            swal.fire({title: 'Apakah anda yakin??', text: "Anda tidak dapat mengembalikan ini !!", icon: "warning", showCancelButton: true, confirmButtonText: 'Hapus!', cancelButtonText: 'Batal', customClass: { confirmButton: 'swal2-delete-confirm', cancelButton: 'swal2-delete-cancel' }, buttonsStyling: false}).then(function(result) {
                 if (result.value) {
                     $.ajax({headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')}, type: "POST", url: "{{ url('task/delete') }}", data: 'id=' + id,
                         success: function(response) { if (response.status == "1") { swal.fire({icon: "success", title: 'Berhasil', text: response.msg, showConfirmButton: true, timer: 900}).then((result) => { if (result.isConfirmed) { reloadDataTable(); } }); setTimeout(function() { reloadDataTable(); }, 900); } else { swal.fire("Error!", response.msg, "error"); } },

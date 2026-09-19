@@ -256,7 +256,7 @@
             swal.fire({
                 title: 'Apakah anda yakin??', text: "Anda tidak dapat mengembalikan ini !!", icon: "warning",
                 showCancelButton: true, confirmButtonText: 'Hapus!', cancelButtonText: 'Batal',
-                confirmButtonClass: 'btn btn-danger mr-3', cancelButtonClass: 'btn btn-secondary', buttonsStyling: false
+                customClass: { confirmButton: 'swal2-delete-confirm', cancelButton: 'swal2-delete-cancel' }, buttonsStyling: false
             }).then(function(result) {
                 if (result.value) {
                     $.ajax({

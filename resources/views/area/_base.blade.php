@@ -115,7 +115,18 @@
     <script src="https://cdn.jsdelivr.net/npm/feather-icons@4.29.2/dist/feather.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js"></script>
     <script>
-        window.swal = window.Swal;
+        window.swal = window.Swal.mixin({
+            didOpen: function (popup) {
+                if (!popup.querySelector(".swal2-warning") || !popup.querySelector(".swal2-cancel")) return;
+                var confirmButton = popup.querySelector(".swal2-confirm");
+                var cancelButton = popup.querySelector(".swal2-cancel");
+                var common = { minHeight: "40px", margin: "0 5px", padding: "9px 18px", borderRadius: "6px", fontFamily: "inherit", fontSize: "13px", fontWeight: "700", lineHeight: "1.25", boxShadow: "none", border: "1px solid transparent" };
+                if (confirmButton) Object.assign(confirmButton.style, common, { backgroundColor: "#d92d20", borderColor: "#d92d20", color: "#fff" });
+                if (cancelButton) Object.assign(cancelButton.style, common, { backgroundColor: "#fff", borderColor: "#bbdefb", color: "#263238" });
+                var actions = popup.querySelector(".swal2-actions");
+                if (actions) { actions.style.gap = "10px"; actions.style.marginTop = "22px"; }
+            }
+        });
         function errorAjaxResponse(response) { var message = 'Terjadi kesalahan. Silakan coba lagi.'; if (response && response.responseJSON && response.responseJSON.message) message = response.responseJSON.message; else if (response && response.responseText) { try { message = JSON.parse(response.responseText).message || message; } catch (e) {} } Swal.fire({ icon: 'error', title: 'Gagal', text: message }); }
         function idrFormat(angka, format) { var value = Number(angka || 0).toLocaleString('id-ID'); return format ? 'Rp ' + value : value; }
         function formatNumber(input) { input.value = String(input.value || '').replace(/[^0-9]/g, ''); }

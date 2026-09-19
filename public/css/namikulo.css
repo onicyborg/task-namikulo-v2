@@ -209,6 +209,41 @@ textarea.form-control { height: auto; min-height: 96px; }
 .modal-body { padding: 22px; }
 .modal-footer { gap: 8px; padding: 15px 22px; border-top: 1px solid var(--nm-line); }
 
+/* SweetAlert2 actions are shared by every area page. */
+.swal2-popup { border-radius: 10px; font-family: inherit; }
+.swal2-actions { gap: 10px; margin-top: 22px; }
+.swal2-actions button.swal2-confirm,
+.swal2-actions button.swal2-cancel {
+  min-height: 40px;
+  margin: 0 !important;
+  padding: 9px 18px;
+  border: 1px solid transparent !important;
+  border-radius: 6px;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.25;
+  box-shadow: none !important;
+  transition: background-color .16s ease, border-color .16s ease, transform .16s ease;
+}
+.swal2-actions button.swal2-confirm:hover,
+.swal2-actions button.swal2-cancel:hover { transform: translateY(-1px); }
+.swal2-actions button.swal2-confirm { background: var(--nm-primary) !important; border-color: var(--nm-primary) !important; color: #fff !important; }
+.swal2-actions button.swal2-confirm:hover { background: var(--nm-primary-dark) !important; border-color: var(--nm-primary-dark) !important; }
+.swal2-actions button.swal2-cancel { background: var(--nm-surface) !important; border-color: var(--nm-line) !important; color: var(--nm-text) !important; }
+.swal2-actions button.swal2-cancel:hover { background: var(--nm-primary-soft) !important; border-color: var(--nm-primary) !important; color: var(--nm-primary-dark) !important; }
+.swal2-actions button.swal2-confirm:focus-visible,
+.swal2-actions button.swal2-cancel:focus-visible { outline: 3px solid rgba(33,150,243,.3); outline-offset: 2px; }
+.swal2-actions .swal2-delete-confirm { background: #d92d20 !important; border-color: #d92d20 !important; color: #fff !important; }
+.swal2-actions .swal2-delete-confirm:hover { background: #b42318 !important; border-color: #b42318 !important; }
+.swal2-actions .swal2-delete-cancel { background: var(--nm-surface) !important; border-color: var(--nm-line) !important; color: var(--nm-text) !important; }
+.swal2-actions .swal2-delete-cancel:hover { background: var(--nm-primary-soft) !important; border-color: var(--nm-primary) !important; color: var(--nm-primary-dark) !important; }
+body.dark .swal2-popup { background: #31363f; color: #eeeeee; }
+body.dark .swal2-title { color: #eeeeee; }
+body.dark .swal2-html-container { color: #c5cbd3; }
+body.dark .swal2-actions .swal2-delete-cancel { background: #222831 !important; border-color: #76abae !important; color: #eeeeee !important; }
+body.dark .swal2-actions .swal2-delete-cancel:hover { background: #31363f !important; color: #90caf9 !important; }
+
 @media (min-width: 992px) {
   #sidebarToggle { display: none; }
 }
