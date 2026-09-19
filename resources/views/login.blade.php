@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="id">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <title>Masuk - Namikulo</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.15.10/dist/sweetalert2.min.css">
+    <link rel="shortcut icon" type="image/x-icon" href="{{ asset('files/img/namikulo.png') }}">
+    <style>
+        :root { --primary: #0f766e; --primary-dark: #115e59; --ink: #172033; --muted: #667085; --line: #e4e7ec; }
+        * { box-sizing: border-box; }
+        body { min-height: 100vh; margin: 0; background: #f4f8f8; color: var(--ink); font-family: 'Plus Jakarta Sans', sans-serif; }
+        .login-page { display: grid; min-height: 100vh; grid-template-columns: minmax(0, 1.1fr) minmax(360px, .9fr); }
+        .login-intro { display: flex; flex-direction: column; justify-content: space-between; padding: clamp(32px, 6vw, 88px); background: #102a2e; color: #fff; }
+        .brand { display: inline-flex; align-items: center; gap: 11px; color: #fff; font-size: 17px; font-weight: 800; letter-spacing: 0; text-decoration: none; }
+        .brand img { width: 36px; height: 36px; border-radius: 7px; background: #fff; object-fit: contain; }
+        .intro-copy { max-width: 540px; margin: auto 0; }
+        .intro-kicker { margin: 0 0 16px; color: #9ecdc7; font-size: 12px; font-weight: 800; letter-spacing: 0; text-transform: uppercase; }
+        .intro-copy h1 { max-width: 500px; margin: 0; color: #fff; font-size: clamp(32px, 4vw, 52px); font-weight: 800; line-height: 1.15; letter-spacing: 0; }
+        .intro-copy p { max-width: 450px; margin: 20px 0 0; color: #bfd2d2; font-size: 16px; line-height: 1.7; }
+        .intro-footer { color: #8ca2a4; font-size: 12px; }
+        .login-panel { display: flex; align-items: center; justify-content: center; padding: 32px; background: #fff; }
+        .login-card { width: 100%; max-width: 400px; }
+        .login-card h2 { margin: 0; color: var(--ink); font-size: 26px; font-weight: 800; }
+        .login-card > p { margin: 8px 0 30px; color: var(--muted); font-size: 14px; }
+        .form-group { margin-bottom: 20px; }
+        .form-group label { margin-bottom: 7px; color: #344054; font-size: 13px; font-weight: 700; }
+        .input-wrap { position: relative; }
+        .input-wrap svg { position: absolute; top: 50%; left: 14px; width: 18px; height: 18px; color: #98a2b3; transform: translateY(-50%); pointer-events: none; }
+        .form-control { height: 46px; border: 1px solid #d0d5dd; border-radius: 6px; padding-left: 44px; color: var(--ink); font-size: 14px; }
+        .form-control:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(15,118,110,.13); }
+        .form-check { display: flex; align-items: center; min-height: 24px; margin: 4px 0 24px; padding-left: 0; }
+        .form-check-input { width: 17px; height: 17px; margin: 0 8px 0 0; accent-color: var(--primary); }
+        .form-check-label { color: var(--muted); font-size: 13px; }
+        .login-btn { display: inline-flex; align-items: center; justify-content: center; gap: 9px; width: 100%; min-height: 46px; border: 1px solid var(--primary); border-radius: 6px; background: var(--primary); color: #fff; font-size: 14px; font-weight: 800; transition: background .16s ease; }
+        .login-btn:hover { background: var(--primary-dark); border-color: var(--primary-dark); }
+        .login-btn:disabled { cursor: not-allowed; opacity: .68; }
+        .spinner { display: none; width: 17px; height: 17px; border: 2px solid rgba(255,255,255,.45); border-top-color: #fff; border-radius: 50%; animation: spin .8s linear infinite; }
+        .login-btn.loading .spinner { display: block; }
+        .login-btn.loading .btn-text { display: none; }
+        .invalid-feedback { margin-top: 6px; font-size: 12px; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        @media (max-width: 767.98px) { .login-page { grid-template-columns: 1fr; } .login-intro { display: none; } .login-panel { min-height: 100vh; padding: 24px; } }
+        @media (prefers-reduced-motion: reduce) { * { animation-duration: .01ms !important; transition-duration: .01ms !important; } }
+    </style>
+</head>
+<body>
+    <div class="login-page">
+        <section class="login-intro" aria-label="Tentang Namikulo">
+            <a class="brand" href="{{ url('/') }}"><img src="{{ asset('files/img/namikulo.png') }}" alt="Logo Namikulo"><span>NAMIKULO</span></a>
+            <div class="intro-copy">
+                <p class="intro-kicker">Task management system</p>
+                <h1>Semua pekerjaan, lebih terarah.</h1>
+                <p>Kelola task, jadwal, dan kolaborasi tim Anda dari satu ruang kerja yang jelas dan rapi.</p>
+            </div>
+            <span class="intro-footer">&copy; {{ date('Y') }} Namikulo</span>
+        </section>
+        <main class="login-panel">
+            <div class="login-card">
+                <h2>Selamat datang</h2>
+                <p>Masuk untuk melanjutkan ke ruang kerja Anda.</p>
+                <form id="form_login" novalidate>
+                    <div class="form-group">
+                        <label for="username">Username</label>
+                        <div class="input-wrap"><i data-feather="user"></i><input id="username" type="text" class="form-control" name="username" autocomplete="username" autofocus placeholder="Masukkan username"></div>
+                        <div id="error_username" class="invalid-feedback"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <div class="input-wrap"><i data-feather="lock"></i><input id="password" type="password" class="form-control" name="password" autocomplete="current-password" placeholder="Masukkan password"></div>
+                        <div id="error_password" class="invalid-feedback"></div>
+                    </div>
+                    <div class="form-check"><input type="checkbox" class="form-check-input" id="remember" name="remember"><label class="form-check-label" for="remember">Ingat saya</label></div>
+                    <button type="submit" id="btn_login" class="login-btn"><span class="btn-text">Masuk</span><span class="spinner" aria-hidden="true"></span></button>
+                </form>
+            </div>
+        </main>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.15.10/dist/sweetalert2.all.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons@4.29.2/dist/feather.min.js"></script>
+    <script>
+        feather.replace();
+        $('#form_login').submit(function (e) {
+            e.preventDefault();
+            $('#username, #password').removeClass('is-invalid');
+            $('#error_username, #error_password').empty();
+            var btn = $('#btn_login').addClass('loading').prop('disabled', true);
+            $.ajax({
+                headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
+                cache: false, contentType: false, processData: false, method: 'post', url: "{{ url('auth') }}", data: new FormData(this), dataType: 'json',
+                success: function (response) {
+                    btn.removeClass('loading').prop('disabled', false);
+                    if (response.status == '1') { Swal.fire({icon: 'success', title: 'Berhasil', text: response.msg, timer: 900, showConfirmButton: false}).then(function () { window.location.href = response.url; }); }
+                    else { Swal.fire({icon: 'error', title: 'Login gagal', text: response.msg}); }
+                },
+                error: function (response) {
+                    btn.removeClass('loading').prop('disabled', false);
+                    if (response.status === 422 && response.responseJSON && response.responseJSON.errors) {
+                        var errors = response.responseJSON.errors;
+                        ['username', 'password'].forEach(function (field) { if (errors[field]) { $('#' + field).addClass('is-invalid'); $('#error_' + field).text(errors[field][0]).show(); } });
+                    } else if (response.status === 419) { Swal.fire({icon: 'error', title: 'Sesi berakhir', text: 'Halaman akan dimuat ulang.'}).then(function () { location.reload(); }); }
+                    else { Swal.fire({icon: 'error', title: 'Gagal', text: 'Terjadi kesalahan. Silakan coba lagi.'}); }
+                }
+            });
+        });
+    </script>
+    @if (session('error'))
+        <script>Swal.fire({icon: 'error', title: 'Gagal', text: @json(session('error'))});</script>
+    @endif
+</body>
+</html>
