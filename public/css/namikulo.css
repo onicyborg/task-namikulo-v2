@@ -1224,3 +1224,8 @@ body.dark .client-detail-page .filter-bar {
   .client-detail-page .detail-card-header { align-items: flex-start; }
   .client-detail-page .detail-card-header .btn { flex: 0 0 auto; }
 }
+
+/* Keep logo and sidebar link text clean on hover. */
+.brand-link, .brand-link:hover, .brand-link:focus, .brand-link:active { text-decoration: none !important; cursor: pointer; }
+body.light-sidebar .brand-link:hover, body.light-sidebar .brand-link:focus, body.light-sidebar .brand-link:active { color: #0d47a1 !important; }
+.sidebar-link, .sidebar-link:hover, .sidebar-link:focus, .sidebar-link:active { text-decoration: none !important; cursor: pointer; }
