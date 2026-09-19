@@ -84,10 +84,10 @@
                 </div>
                 <div class="card-body">
                     <div class="row">
-                        <div class="col-lg-9 col-md-8 col-sm-12">
+                        <div class="col-lg-9 col-md-8 col-sm-12 dashboard-chart-column">
                             <div id="chart1" style="min-height: 300px;"></div>
                         </div>
-                        <div class="col-lg-3 col-md-4 col-sm-12 mt-4 mt-md-0">
+                        <div class="col-lg-3 col-md-4 col-sm-12 mt-4 mt-md-0 dashboard-summary-column">
                             <div class="dashboard-summary" style="background: var(--bg-primary); border-radius: var(--radius-lg); padding: 1.25rem; border: 1px solid var(--border-color);">
                                 <h6 style="font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-secondary); margin-bottom: 1rem;">Ringkasan</h6>
                                 <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.625rem 0; border-bottom: 1px solid var(--border-light);">

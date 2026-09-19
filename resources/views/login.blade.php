@@ -12,31 +12,31 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.15.10/dist/sweetalert2.min.css">
     <link rel="shortcut icon" type="image/x-icon" href="{{ asset('files/img/namikulo.png') }}">
     <style>
-        :root { --primary: #0f766e; --primary-dark: #115e59; --ink: #172033; --muted: #667085; --line: #e4e7ec; }
+        :root { --primary: #2196f3; --primary-dark: #0d47a1; --ink: #0d47a1; --muted: #546e7a; --line: #bbdefb; }
         * { box-sizing: border-box; }
-        body { min-height: 100vh; margin: 0; background: #f4f8f8; color: var(--ink); font-family: 'Plus Jakarta Sans', sans-serif; }
+        body { min-height: 100vh; margin: 0; background: #e3f2fd; color: #263238; font-family: 'Plus Jakarta Sans', sans-serif; }
         .login-page { display: grid; min-height: 100vh; grid-template-columns: minmax(0, 1.1fr) minmax(360px, .9fr); }
-        .login-intro { display: flex; flex-direction: column; justify-content: space-between; padding: clamp(32px, 6vw, 88px); background: #102a2e; color: #fff; }
+        .login-intro { display: flex; flex-direction: column; justify-content: space-between; padding: clamp(32px, 6vw, 88px); background: #0d47a1; color: #fff; }
         .brand { display: inline-flex; align-items: center; gap: 11px; color: #fff; font-size: 17px; font-weight: 800; letter-spacing: 0; text-decoration: none; }
         .brand img { width: 36px; height: 36px; border-radius: 7px; background: #fff; object-fit: contain; }
         .intro-copy { max-width: 540px; margin: auto 0; }
-        .intro-kicker { margin: 0 0 16px; color: #9ecdc7; font-size: 12px; font-weight: 800; letter-spacing: 0; text-transform: uppercase; }
+        .intro-kicker { margin: 0 0 16px; color: #90caf9; font-size: 12px; font-weight: 800; letter-spacing: 0; text-transform: uppercase; }
         .intro-copy h1 { max-width: 500px; margin: 0; color: #fff; font-size: clamp(32px, 4vw, 52px); font-weight: 800; line-height: 1.15; letter-spacing: 0; }
-        .intro-copy p { max-width: 450px; margin: 20px 0 0; color: #bfd2d2; font-size: 16px; line-height: 1.7; }
-        .intro-footer { color: #8ca2a4; font-size: 12px; }
+        .intro-copy p { max-width: 450px; margin: 20px 0 0; color: #dbeafe; font-size: 16px; line-height: 1.7; }
+        .intro-footer { color: #bbdefb; font-size: 12px; }
         .login-panel { display: flex; align-items: center; justify-content: center; padding: 32px; background: #fff; }
         .login-card { width: 100%; max-width: 400px; }
         .login-card h2 { margin: 0; color: var(--ink); font-size: 26px; font-weight: 800; }
         .login-card > p { margin: 8px 0 30px; color: var(--muted); font-size: 14px; }
         .form-group { margin-bottom: 20px; }
-        .form-group label { margin-bottom: 7px; color: #344054; font-size: 13px; font-weight: 700; }
+        .form-group label { margin-bottom: 7px; color: #263238; font-size: 13px; font-weight: 700; }
         .input-wrap { position: relative; }
-        .input-wrap svg { position: absolute; top: 50%; left: 14px; width: 18px; height: 18px; color: #98a2b3; transform: translateY(-50%); pointer-events: none; }
-        .form-control { height: 46px; border: 1px solid #d0d5dd; border-radius: 6px; padding-left: 44px; color: var(--ink); font-size: 14px; }
-        .form-control:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(15,118,110,.13); }
-        .form-check { display: flex; align-items: center; min-height: 24px; margin: 4px 0 24px; padding-left: 0; }
-        .form-check-input { width: 17px; height: 17px; margin: 0 8px 0 0; accent-color: var(--primary); }
-        .form-check-label { color: var(--muted); font-size: 13px; }
+        .input-wrap svg { position: absolute; top: 50%; left: 14px; width: 18px; height: 18px; color: #78909c; transform: translateY(-50%); pointer-events: none; }
+        .form-control { height: 46px; border: 1px solid #bbdefb; border-radius: 6px; padding-left: 44px; color: #263238; font-size: 14px; }
+        .form-control:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(33,150,243,.16); }
+        .form-check { display: flex; align-items: center; gap: 8px; min-height: 24px; margin: 4px 0 24px; padding-left: 0; }
+        .form-check-input { position: static; flex: 0 0 17px; width: 17px; height: 17px; margin: 0; accent-color: var(--primary); }
+        .form-check-label { display: inline-block; margin: 0; color: var(--muted); font-size: 13px; line-height: 1.4; cursor: pointer; }
         .login-btn { display: inline-flex; align-items: center; justify-content: center; gap: 9px; width: 100%; min-height: 46px; border: 1px solid var(--primary); border-radius: 6px; background: var(--primary); color: #fff; font-size: 14px; font-weight: 800; transition: background .16s ease; }
         .login-btn:hover { background: var(--primary-dark); border-color: var(--primary-dark); }
         .login-btn:disabled { cursor: not-allowed; opacity: .68; }

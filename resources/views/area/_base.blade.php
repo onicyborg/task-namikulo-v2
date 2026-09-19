@@ -30,13 +30,13 @@
             </div>
             <nav class="sidebar-nav">
                 <p class="nav-section-label">Workspace</p>
-                <a href="{{ url('dashboard') }}" class="sidebar-link {{ ($page ?? '') == 'dashboard' ? 'is-active' : '' }}" {{ ($page ?? '') == 'dashboard' ? 'aria-current=page' : '' }}><i data-feather="grid"></i><span>Dashboard</span></a>
-                <a href="{{ url('calendar') }}" class="sidebar-link {{ ($page ?? '') == 'calendar' ? 'is-active' : '' }}" {{ ($page ?? '') == 'calendar' ? 'aria-current=page' : '' }}><i data-feather="calendar"></i><span>Kalender</span></a>
-                <a href="{{ url('task') }}" class="sidebar-link {{ ($page ?? '') == 'task' ? 'is-active' : '' }}" {{ ($page ?? '') == 'task' ? 'aria-current=page' : '' }}><i data-feather="clipboard"></i><span>Task</span></a>
+                <a href="{{ url('dashboard') }}" class="sidebar-link {{ ($page ?? '') == 'dashboard' ? 'is-active' : '' }}" {{ ($page ?? '') == 'dashboard' ? 'aria-current=page' : '' }}><i class="fas fa-th-large" aria-hidden="true"></i><span>Dashboard</span></a>
+                <a href="{{ url('calendar') }}" class="sidebar-link {{ ($page ?? '') == 'calendar' ? 'is-active' : '' }}" {{ ($page ?? '') == 'calendar' ? 'aria-current=page' : '' }}><i class="fas fa-calendar-alt" aria-hidden="true"></i><span>Kalender</span></a>
+                <a href="{{ url('task') }}" class="sidebar-link {{ ($page ?? '') == 'task' ? 'is-active' : '' }}" {{ ($page ?? '') == 'task' ? 'aria-current=page' : '' }}><i class="fas fa-clipboard-list" aria-hidden="true"></i><span>Task</span></a>
                 @if (Auth::user()->role == 'Admin')
                     <p class="nav-section-label nav-section-label--spaced">Data master</p>
-                    <a href="{{ url('client') }}" class="sidebar-link {{ ($page ?? '') == 'client' ? 'is-active' : '' }}" {{ ($page ?? '') == 'client' ? 'aria-current=page' : '' }}><i data-feather="users"></i><span>Client</span></a>
-                    <a href="{{ url('worker') }}" class="sidebar-link {{ ($page ?? '') == 'worker' ? 'is-active' : '' }}" {{ ($page ?? '') == 'worker' ? 'aria-current=page' : '' }}><i data-feather="user-check"></i><span>Worker</span></a>
+                    <a href="{{ url('client') }}" class="sidebar-link {{ ($page ?? '') == 'client' ? 'is-active' : '' }}" {{ ($page ?? '') == 'client' ? 'aria-current=page' : '' }}><i class="fas fa-users" aria-hidden="true"></i><span>Client</span></a>
+                    <a href="{{ url('worker') }}" class="sidebar-link {{ ($page ?? '') == 'worker' ? 'is-active' : '' }}" {{ ($page ?? '') == 'worker' ? 'aria-current=page' : '' }}><i class="fas fa-user-tie" aria-hidden="true"></i><span>Worker</span></a>
                 @endif
             </nav>
             <div class="sidebar-account">
@@ -161,6 +161,9 @@
                 allowedColors.forEach(function (color) { body.classList.remove('theme-' + color); });
                 body.classList.add('theme-' + preferences.color);
                 renderControls();
+                window.requestAnimationFrame(function () {
+                    window.dispatchEvent(new Event('resize'));
+                });
             }
             function saveTheme() {
                 fetch('{{ url('theme/preferences') }}', {

@@ -39,6 +39,7 @@ button:focus, a:focus, input:focus, select:focus, textarea:focus { outline: 0; }
 .nav-section-label--spaced { margin-top: 26px; }
 .sidebar-link { display: flex; align-items: center; gap: 12px; min-height: 44px; margin: 3px 0; padding: 10px 12px; border-radius: 6px; color: var(--nm-sidebar-text) !important; font-weight: 600; text-decoration: none; transition: background-color .16s ease, color .16s ease; }
 .sidebar-link svg { width: 19px; height: 19px; flex: 0 0 19px; stroke-width: 1.9; }
+.sidebar-link i { display: inline-flex; align-items: center; justify-content: center; width: 19px; height: 19px; flex: 0 0 19px; font-size: 16px; }
 .sidebar-link:hover { background: rgba(255,255,255,.08); color: #fff !important; }
 .sidebar-link.is-active { background: #e1f6f1; color: #0b4f4a !important; }
 .sidebar-account { display: flex; align-items: center; gap: 10px; margin: 12px; padding: 12px; border: 1px solid rgba(255,255,255,.1); border-radius: var(--nm-radius); background: rgba(255,255,255,.04); }
@@ -641,6 +642,11 @@ body.dark .detail-info-card a:not(.btn) {
 }
 /* Dashboard summary dark contrast. */
 .dashboard-summary { color: var(--nm-ink); }
+.dashboard-chart-column,
+.dashboard-summary-column { min-width: 0; }
+.dashboard-chart-column { overflow: hidden; }
+.dashboard-chart-column #chart1,
+.dashboard-summary { width: 100%; min-width: 0; }
 .dashboard-summary > div > span { color: var(--nm-ink); }
 .dashboard-summary > div > span:first-child { color: var(--nm-muted); }
 body.dark .dashboard-summary {
@@ -728,6 +734,12 @@ body.light-sidebar .brand-logo {
   background: #ffffff;
   box-shadow: 0 1px 3px rgba(13, 71, 161, .12);
 }
+body.light.light-sidebar .brand-logo {
+  background: #ffffff;
+}
+body.light.light-sidebar .brand-bar {
+  background: #ffffff;
+}
 body.light-sidebar .nav-section-label {
   color: #546e7a !important;
 }
@@ -735,7 +747,8 @@ body.light-sidebar .sidebar-link,
 body.light-sidebar .sidebar-link:visited {
   color: #0d47a1 !important;
 }
-body.light-sidebar .sidebar-link svg {
+body.light-sidebar .sidebar-link svg,
+body.light-sidebar .sidebar-link i {
   color: #2196f3;
 }
 body.light-sidebar .sidebar-link:hover,
@@ -748,7 +761,8 @@ body.light-sidebar .sidebar-link.is-active {
   color: #0d47a1 !important;
   box-shadow: inset 3px 0 0 #0d47a1;
 }
-body.light-sidebar .sidebar-link.is-active svg {
+body.light-sidebar .sidebar-link.is-active svg,
+body.light-sidebar .sidebar-link.is-active i {
   color: #0d47a1;
 }
 body.light-sidebar .sidebar-account {
