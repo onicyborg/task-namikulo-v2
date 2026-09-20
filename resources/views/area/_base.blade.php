@@ -1,223 +1,169 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="id">
+
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, shrink-to-fit=no">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>{{ $title ?? 'Namikulo' }}</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/datatables.net-bs4@1.13.11/css/dataTables.bootstrap4.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.4/css/all.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.15.10/dist/sweetalert2.min.css">
+
+    @php
+        $otikaAssets = 'https://otika.namikulo.com/assets';
+        $otikaThemePalette = ['white', 'cyan', 'black', 'purple', 'orange', 'green', 'red'];
+        $otikaTheme = in_array($themeColor ?? 'white', $otikaThemePalette, true) ? ($themeColor ?? 'white') : 'white';
+        $otikaLayout = ($layout ?? 'light') === 'dark' ? 'dark' : 'light';
+        $otikaSidebar = ($sidebarColor ?? 'dark-sidebar') === 'light-sidebar' ? 'light' : 'dark';
+        $otikaMiniSidebar = (bool) ($miniSidebar ?? false);
+        $otikaStickyHeader = (bool) ($stickyHeader ?? true);
+    @endphp
+    {{-- Custom content helpers stay local; Otika framework assets use the deployed asset host. --}}
     <link rel="stylesheet" href="{{ asset('css/namikulo.css') }}?v={{ filemtime(public_path('css/namikulo.css')) }}">
+    <link rel="stylesheet" href="{{ $otikaAssets }}/css/app.min.css">
+    <link rel="stylesheet" href="{{ $otikaAssets }}/bundles/prism/prism.css">
+    <link rel="stylesheet" href="{{ $otikaAssets }}/bundles/datatables/datatables.min.css">
+    <link rel="stylesheet" href="{{ $otikaAssets }}/bundles/datatables/DataTables-1.10.16/css/dataTables.bootstrap4.min.css">
+    <link rel="stylesheet" href="{{ $otikaAssets }}/bundles/select2/dist/css/select2.min.css">
+    <link rel="stylesheet" href="{{ $otikaAssets }}/bundles/jquery-selectric/selectric.css">
+    <link rel="stylesheet" href="{{ $otikaAssets }}/css/style.css">
+    <link rel="stylesheet" href="{{ $otikaAssets }}/css/components.css">
+    <link rel="stylesheet" href="{{ $otikaAssets }}/css/custom.css">
+    {{-- Otika's FontAwesome files are not served with CORS headers; use a CORS-enabled equivalent. --}}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        /* The deployed Otika CSS references font files without CORS headers. Keep the Otika UI
+           intact while preventing the browser from requesting those broken font sources. */
+        body,
+        body *:not(.fa):not(.fas):not(.far):not(.fab):not(.fal):not(.fad):not(.fc-icon) {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif !important;
+        }
+        .sidebar-brand > a {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+    </style>
     <link rel="shortcut icon" type="image/x-icon" href="{{ asset('files/img/namikulo.png') }}">
     @stack('head')
 </head>
-<body class="{{ $layout ?? 'light' }} {{ $sidebarColor ?? 'dark-sidebar' }} theme-{{ $themeColor ?? 'blue' }}{{ ($miniSidebar ?? false) ? ' sidebar-mini' : '' }}{{ !($stickyHeader ?? true) ? ' topbar-static' : '' }}">
-    <a class="skip-link" href="#main-content">Langsung ke konten utama</a>
-    <div class="app-shell">
-        <aside class="app-sidebar" id="appSidebar" aria-label="Navigasi utama">
-            <div class="brand-bar">
-                <a href="{{ url('dashboard') }}" class="brand-link" aria-label="Namikulo dashboard">
-                    <img src="{{ asset('files/img/namikulo.png') }}" alt="Logo Namikulo" class="brand-logo">
-                    <span>NAMIKULO</span>
-                </a>
-                <button class="sidebar-close d-lg-none" type="button" id="sidebarClose" aria-label="Tutup navigasi"><i data-feather="x"></i></button>
-            </div>
-            <nav class="sidebar-nav">
-                <p class="nav-section-label">Workspace</p>
-                <a href="{{ url('dashboard') }}" class="sidebar-link {{ ($page ?? '') == 'dashboard' ? 'is-active' : '' }}" {{ ($page ?? '') == 'dashboard' ? 'aria-current=page' : '' }}><i class="fas fa-th-large" aria-hidden="true"></i><span>Dashboard</span></a>
-                <a href="{{ url('calendar') }}" class="sidebar-link {{ ($page ?? '') == 'calendar' ? 'is-active' : '' }}" {{ ($page ?? '') == 'calendar' ? 'aria-current=page' : '' }}><i class="fas fa-calendar-alt" aria-hidden="true"></i><span>Kalender</span></a>
-                <a href="{{ url('task') }}" class="sidebar-link {{ ($page ?? '') == 'task' ? 'is-active' : '' }}" {{ ($page ?? '') == 'task' ? 'aria-current=page' : '' }}><i class="fas fa-clipboard-list" aria-hidden="true"></i><span>Task</span></a>
-                @if (Auth::user()->role == 'Admin')
-                    <p class="nav-section-label nav-section-label--spaced">Data master</p>
-                    <a href="{{ url('client') }}" class="sidebar-link {{ ($page ?? '') == 'client' ? 'is-active' : '' }}" {{ ($page ?? '') == 'client' ? 'aria-current=page' : '' }}><i class="fas fa-users" aria-hidden="true"></i><span>Client</span></a>
-                    <a href="{{ url('worker') }}" class="sidebar-link {{ ($page ?? '') == 'worker' ? 'is-active' : '' }}" {{ ($page ?? '') == 'worker' ? 'aria-current=page' : '' }}><i class="fas fa-user-tie" aria-hidden="true"></i><span>Worker</span></a>
-                @endif
-            </nav>
-            <div class="sidebar-account">
-                <img src="{{ asset(Auth::user()->img) }}" alt="" class="sidebar-avatar">
-                <div class="sidebar-account-copy"><strong>{{ Auth::user()->fullname }}</strong><span>{{ Auth::user()->role }}</span></div>
-            </div>
-        </aside>
-        <div class="app-main">
-            <header class="app-topbar">
-                <button class="icon-button" type="button" id="sidebarToggle" aria-label="Buka navigasi" aria-controls="appSidebar" aria-expanded="false"><i data-feather="menu"></i></button>
-                <div class="topbar-title d-none d-sm-block"><span>Task Management</span></div>
-                <button class="icon-button theme-settings-toggle" type="button" id="themeSettingsToggle" aria-label="Buka pengaturan tampilan" title="Pengaturan tampilan" aria-controls="themeSettings" aria-expanded="false"><i data-feather="settings"></i></button>
-                <div class="ml-auto dropdown">
-                    <button class="profile-menu" type="button" id="profileMenu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><img src="{{ asset(Auth::user()->img) }}" alt="Foto profil {{ Auth::user()->fullname }}"><span class="d-none d-md-inline">{{ Auth::user()->fullname }}</span><i data-feather="chevron-down" class="d-none d-md-inline"></i></button>
-                    <div class="dropdown-menu dropdown-menu-right profile-dropdown" aria-labelledby="profileMenu">
-                        <div class="profile-dropdown-header"><strong>{{ Auth::user()->fullname }}</strong><span>{{ Auth::user()->role }}</span></div>
-                        <a class="dropdown-item" href="{{ url('profil') }}"><i data-feather="user"></i> Profil saya</a>
-                        <div class="dropdown-divider"></div>
-                        <a class="dropdown-item text-danger" href="{{ url('logout') }}"><i data-feather="log-out"></i> Keluar</a>
-                    </div>
+
+<body class="{{ $otikaLayout }} {{ $otikaSidebar === 'light' ? 'light-sidebar' : 'dark-sidebar' }} theme-{{ $otikaTheme }}{{ $otikaMiniSidebar ? ' sidebar-mini' : '' }}">
+    <div class="loader"></div>
+    <div id="app">
+        <div class="main-wrapper main-wrapper-1">
+            <div class="navbar-bg"></div>
+            <nav class="navbar navbar-expand-lg main-navbar{{ $otikaStickyHeader ? ' sticky' : '' }}">
+                <div class="form-inline mr-auto">
+                    <ul class="navbar-nav mr-3">
+                        <li><a href="#" data-toggle="sidebar" class="nav-link nav-link-lg collapse-btn" aria-label="Buka navigasi"><i data-feather="align-justify"></i></a></li>
+                    </ul>
                 </div>
-            </header>
-            <main class="app-content" id="main-content" tabindex="-1">@yield('content')</main>
-            @yield('modal')
-            <footer class="app-footer"><span>&copy; {{ date('Y') }} Namikulo</span><span>Task Management System</span></footer>
+                <ul class="navbar-nav navbar-right">
+                    <li class="dropdown">
+                        <a href="#" data-toggle="dropdown" class="nav-link dropdown-toggle nav-link-lg nav-link-user" aria-label="Menu akun"><img alt="Foto {{ Auth::user()->fullname }}" src="{{ asset(Auth::user()->img) }}" class="user-img-radious-style"></a>
+                        <div class="dropdown-menu dropdown-menu-right pullDown">
+                            <div class="dropdown-title">Halo {{ Auth::user()->fullname }}</div>
+                            <a href="{{ url('profil') }}" class="dropdown-item has-icon"><i class="far fa-user"></i> Profil</a>
+                            <div class="dropdown-divider"></div>
+                            <a href="{{ url('logout') }}" class="dropdown-item has-icon text-danger"><i class="fas fa-sign-out-alt"></i> Keluar</a>
+                        </div>
+                    </li>
+                </ul>
+            </nav>
+
+            <div class="main-sidebar sidebar-style-2">
+                <aside id="sidebar-wrapper" aria-label="Navigasi utama">
+                    <div class="sidebar-brand"><a href="{{ url('dashboard') }}"><img alt="Logo Namikulo" src="{{ asset('files/img/namikulo.png') }}" class="header-logo"><span class="logo-name">NAMIKULO</span></a></div>
+                    <ul class="sidebar-menu">
+                        <li class="menu-header">Main</li>
+                        <li class="{{ ($page ?? '') === 'dashboard' ? 'active' : '' }}"><a href="{{ url('dashboard') }}" class="nav-link"><i data-feather="monitor"></i><span>Dashboard</span></a></li>
+                        <li class="{{ ($page ?? '') === 'calendar' ? 'active' : '' }}"><a href="{{ url('calendar') }}" class="nav-link"><i data-feather="calendar"></i><span>Kalender</span></a></li>
+                        <li class="{{ ($page ?? '') === 'task' ? 'active' : '' }}"><a href="{{ url('task') }}" class="nav-link"><i data-feather="briefcase"></i><span>Task</span></a></li>
+                        @if (Auth::user()->role === 'Admin')
+                            <li class="menu-header">Master</li>
+                            <li class="{{ ($page ?? '') === 'client' ? 'active' : '' }}"><a href="{{ url('client') }}" class="nav-link"><i data-feather="command"></i><span>Client</span></a></li>
+                            <li class="{{ ($page ?? '') === 'worker' ? 'active' : '' }}"><a href="{{ url('worker') }}" class="nav-link"><i data-feather="user"></i><span>Worker</span></a></li>
+                        @endif
+                    </ul>
+                </aside>
+            </div>
+
+            <div class="main-content">
+                <section class="section"><div class="section-body">@yield('content')</div></section>
+                @yield('modal')
+                <div class="settingSidebar" aria-label="Pengaturan tampilan">
+                    <a href="javascript:void(0)" class="settingPanelToggle" aria-label="Buka pengaturan tampilan"><i class="fa fa-spin fa-cog"></i></a>
+                    <div class="settingSidebar-body ps-container ps-theme-default"><div class="fade show active">
+                        <div class="setting-panel-header">Pengaturan tampilan</div>
+                        <div class="p-15 border-bottom"><h6 class="font-medium m-b-10">Layout</h6><div class="selectgroup layout-color w-50">
+                            <label class="selectgroup-item"><input type="radio" name="layout" value="1" class="selectgroup-input-radio select-layout"><span class="selectgroup-button">Light</span></label>
+                            <label class="selectgroup-item"><input type="radio" name="layout" value="2" class="selectgroup-input-radio select-layout"><span class="selectgroup-button">Dark</span></label>
+                        </div></div>
+                        <div class="p-15 border-bottom"><h6 class="font-medium m-b-10">Sidebar Color</h6><div class="selectgroup selectgroup-pills sidebar-color">
+                            <label class="selectgroup-item"><input type="radio" name="sidebar" value="1" class="selectgroup-input select-sidebar"><span class="selectgroup-button selectgroup-button-icon" title="Light Sidebar"><i class="fas fa-sun"></i></span></label>
+                            <label class="selectgroup-item"><input type="radio" name="sidebar" value="2" class="selectgroup-input select-sidebar"><span class="selectgroup-button selectgroup-button-icon" title="Dark Sidebar"><i class="fas fa-moon"></i></span></label>
+                        </div></div>
+                        <div class="p-15 border-bottom"><h6 class="font-medium m-b-10">Color Theme</h6><ul class="choose-theme list-unstyled mb-0">
+                            <li title="white"><div class="white"></div></li><li title="cyan"><div class="cyan"></div></li><li title="black"><div class="black"></div></li><li title="purple"><div class="purple"></div></li><li title="orange"><div class="orange"></div></li><li title="green"><div class="green"></div></li><li title="red"><div class="red"></div></li>
+                        </ul></div>
+                        <div class="p-15 border-bottom"><label class="m-b-0"><input type="checkbox" class="custom-switch-input" id="mini_sidebar_setting"><span class="custom-switch-indicator"></span><span class="control-label p-l-10">Mini Sidebar</span></label></div>
+                        <div class="p-15 border-bottom"><label class="m-b-0"><input type="checkbox" class="custom-switch-input" id="sticky_header_setting"><span class="custom-switch-indicator"></span><span class="control-label p-l-10">Sticky Header</span></label></div>
+                        <div class="mt-4 mb-4 p-3 align-center rt-sidebar-last-ele"><a href="#" class="btn btn-icon icon-left btn-primary btn-restore-theme"><i class="fas fa-undo"></i> Restore Default</a></div>
+                    </div></div>
+                </div>
+            </div>
+
+            <footer class="main-footer"><div class="footer-left m-0"><p class="m-0">Copyrights © {{ date('Y') }} Namikulo</p></div><div class="footer-right"><p class="m-0">Task Management</p></div></footer>
         </div>
     </div>
-    <div class="sidebar-backdrop" id="sidebarBackdrop" aria-hidden="true"></div>
-    <div class="theme-panel-backdrop" id="themePanelBackdrop" aria-hidden="true"></div>
-    <aside class="theme-panel" id="themeSettings" aria-labelledby="themeSettingsTitle" aria-hidden="true">
-        <div class="theme-panel-header">
-            <div>
-                <p>Preferensi pribadi</p>
-                <h2 id="themeSettingsTitle">Tampilan</h2>
-            </div>
-            <button class="icon-button" type="button" id="themeSettingsClose" aria-label="Tutup pengaturan tampilan"><i data-feather="x"></i></button>
-        </div>
-        <form class="theme-panel-body" id="themePreferenceForm">
-            <fieldset class="theme-control-group">
-                <legend>Mode tampilan</legend>
-                <div class="theme-segmented-control">
-                    <label><input type="radio" name="layout" value="light" data-theme-preference="layout"><span><i data-feather="sun" aria-hidden="true"></i> Terang</span></label>
-                    <label><input type="radio" name="layout" value="dark" data-theme-preference="layout"><span><i data-feather="moon" aria-hidden="true"></i> Gelap</span></label>
-                </div>
-            </fieldset>
-            <fieldset class="theme-control-group">
-                <legend>Warna sidebar</legend>
-                <div class="theme-segmented-control">
-                    <label><input type="radio" name="sidebar" value="dark" data-theme-preference="sidebar"><span><i data-feather="square" aria-hidden="true"></i> Gelap</span></label>
-                    <label><input type="radio" name="sidebar" value="light" data-theme-preference="sidebar"><span><i data-feather="square" aria-hidden="true"></i> Terang</span></label>
-                </div>
-            </fieldset>
-            <fieldset class="theme-control-group">
-                <legend>Warna aksen</legend>
-                <div class="theme-color-grid" role="radiogroup" aria-label="Warna aksen">
-                    <label title="Biru"><input type="radio" name="color" value="blue" data-theme-preference="color"><span class="theme-swatch theme-swatch--blue"><i data-feather="check" aria-hidden="true"></i><b>Biru</b></span></label>
-                    <label title="Langit"><input type="radio" name="color" value="cyan" data-theme-preference="color"><span class="theme-swatch theme-swatch--cyan"><i data-feather="check" aria-hidden="true"></i><b>Langit</b></span></label>
-                    <label title="Navy"><input type="radio" name="color" value="purple" data-theme-preference="color"><span class="theme-swatch theme-swatch--purple"><i data-feather="check" aria-hidden="true"></i><b>Navy</b></span></label>
-                    <label title="Ice"><input type="radio" name="color" value="green" data-theme-preference="color"><span class="theme-swatch theme-swatch--green"><i data-feather="check" aria-hidden="true"></i><b>Ice</b></span></label>
-                </div>
-            </fieldset>
-            <div class="theme-control-group theme-toggle-list">
-                <label class="theme-toggle-row" for="miniSidebarPreference"><span><strong>Sidebar ringkas</strong><small>Hanya ikon pada layar lebar</small></span><input type="checkbox" id="miniSidebarPreference" data-theme-preference="miniSidebar"><i aria-hidden="true"></i></label>
-                <label class="theme-toggle-row" for="stickyHeaderPreference"><span><strong>Header sticky</strong><small>Header tetap terlihat saat scroll</small></span><input type="checkbox" id="stickyHeaderPreference" data-theme-preference="stickyHeader"><i aria-hidden="true"></i></label>
-            </div>
-        </form>
-        <div class="theme-panel-footer"><button class="btn btn-secondary" type="button" id="themeReset">Kembalikan default</button></div>
-        <span class="sr-only" id="themeStatus" aria-live="polite"></span>
-    </aside>
-    <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/datatables.net@1.13.11/js/jquery.dataTables.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/datatables.net-bs4@1.13.11/js/dataTables.bootstrap4.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.15.10/dist/sweetalert2.all.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/feather-icons@4.29.2/dist/feather.min.js"></script>
+
+    <script src="{{ $otikaAssets }}/js/app.min.js"></script>
+    <script src="{{ $otikaAssets }}/bundles/prism/prism.js"></script>
+    <script src="{{ $otikaAssets }}/bundles/datatables/datatables.min.js"></script>
+    <script src="{{ $otikaAssets }}/bundles/datatables/DataTables-1.10.16/js/dataTables.bootstrap4.min.js"></script>
+    <script src="{{ $otikaAssets }}/bundles/jquery-ui/jquery-ui.min.js"></script>
+    <script src="{{ $otikaAssets }}/bundles/select2/dist/js/select2.full.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js"></script>
+    <script src="{{ $otikaAssets }}/js/scripts.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.15.10/dist/sweetalert2.all.min.js"></script>
     <script>
-        window.swal = window.Swal.mixin({
-            didOpen: function (popup) {
-                if (!popup.querySelector(".swal2-warning") || !popup.querySelector(".swal2-cancel")) return;
-                var confirmButton = popup.querySelector(".swal2-confirm");
-                var cancelButton = popup.querySelector(".swal2-cancel");
-                var common = { minHeight: "40px", margin: "0 5px", padding: "9px 18px", borderRadius: "6px", fontFamily: "inherit", fontSize: "13px", fontWeight: "700", lineHeight: "1.25", boxShadow: "none", border: "1px solid transparent" };
-                if (confirmButton) Object.assign(confirmButton.style, common, { backgroundColor: "#d92d20", borderColor: "#d92d20", color: "#fff" });
-                if (cancelButton) Object.assign(cancelButton.style, common, { backgroundColor: "#fff", borderColor: "#bbdefb", color: "#263238" });
-                var actions = popup.querySelector(".swal2-actions");
-                if (actions) { actions.style.gap = "10px"; actions.style.marginTop = "22px"; }
-            }
-        });
-        function errorAjaxResponse(response) { var message = 'Terjadi kesalahan. Silakan coba lagi.'; if (response && response.responseJSON && response.responseJSON.message) message = response.responseJSON.message; else if (response && response.responseText) { try { message = JSON.parse(response.responseText).message || message; } catch (e) {} } Swal.fire({ icon: 'error', title: 'Gagal', text: message }); }
-        function idrFormat(angka, format) { var value = Number(angka || 0).toLocaleString('id-ID'); return format ? 'Rp ' + value : value; }
+        function errorAjaxResponse(response) { var message = response && response.status === 419 ? 'Halaman kadaluarsa, silakan reload halaman.' : 'Terjadi kesalahan. Silakan coba lagi.'; if (response && response.responseJSON && response.responseJSON.message) message = response.responseJSON.message; Swal.fire({ icon: 'error', title: 'Gagal', text: message }); }
+        function idrFormat(angka, format) { var value = Number(angka || 0).toLocaleString('id-ID'); return format ? 'Rp. ' + value : value; }
         function formatNumber(input) { input.value = String(input.value || '').replace(/[^0-9]/g, ''); }
-        (function () {
-            var allowedColors = ['blue', 'cyan', 'purple', 'green', 'orange', 'red', 'pink'];
-            var defaults = { layout: 'light', sidebar: 'dark', color: 'blue', miniSidebar: false, stickyHeader: true };
-            var preferences = {
-                layout: @json($layout ?? 'light'),
-                sidebar: @json(($sidebarColor ?? 'dark-sidebar') === 'light-sidebar' ? 'light' : 'dark'),
-                color: @json($themeColor ?? 'blue'),
-                miniSidebar: @json($miniSidebar ?? false),
-                stickyHeader: @json($stickyHeader ?? true)
+
+        $(function () {
+            var defaults = { layout: 'light', sidebar: 'dark', color: 'white', miniSidebar: false, stickyHeader: true };
+            var preference = {
+                layout: @json($otikaLayout),
+                sidebar: @json($otikaSidebar),
+                color: @json($otikaTheme),
+                miniSidebar: @json($otikaMiniSidebar),
+                stickyHeader: @json($otikaStickyHeader)
             };
-            var body = document.body;
-            var panel = document.getElementById('themeSettings');
-            var panelBackdrop = document.getElementById('themePanelBackdrop');
-            var panelToggle = document.getElementById('themeSettingsToggle');
-            var panelClose = document.getElementById('themeSettingsClose');
-            var status = document.getElementById('themeStatus');
-
-            function normalize(theme) {
-                return {
-                    layout: theme.layout === 'dark' ? 'dark' : 'light',
-                    sidebar: theme.sidebar === 'light' ? 'light' : 'dark',
-                    color: allowedColors.indexOf(theme.color) > -1 ? theme.color : defaults.color,
-                    miniSidebar: Boolean(theme.miniSidebar),
-                    stickyHeader: theme.stickyHeader !== false
-                };
+            var themeColors = ['white', 'cyan', 'black', 'purple', 'orange', 'green', 'red'];
+            function applyPreference() {
+                var body = document.body;
+                body.classList.remove('light', 'dark', 'light-sidebar', 'dark-sidebar');
+                themeColors.forEach(function (color) { body.classList.remove('theme-' + color); });
+                body.classList.add(preference.layout === 'dark' ? 'dark' : 'light');
+                body.classList.add(preference.sidebar === 'light' ? 'light-sidebar' : 'dark-sidebar');
+                body.classList.add('theme-' + (themeColors.indexOf(preference.color) > -1 ? preference.color : 'white'));
+                $('.select-layout[value="' + (preference.layout === 'dark' ? '2' : '1') + '"]').prop('checked', true);
+                $('.select-sidebar[value="' + (preference.sidebar === 'light' ? '1' : '2') + '"]').prop('checked', true);
+                $('.choose-theme li').removeClass('active').filter('[title="' + preference.color + '"]').addClass('active');
+                $('#mini_sidebar_setting').prop('checked', preference.miniSidebar);
+                $('#sticky_header_setting').prop('checked', preference.stickyHeader);
+                $('.main-navbar').toggleClass('sticky', preference.stickyHeader);
             }
-            function renderControls() {
-                document.querySelectorAll('[data-theme-preference]').forEach(function (control) {
-                    var key = control.getAttribute('data-theme-preference');
-                    control.checked = control.type === 'checkbox' ? preferences[key] : control.value === preferences[key];
-                });
-            }
-            function applyTheme() {
-                body.classList.toggle('dark', preferences.layout === 'dark');
-                body.classList.toggle('light', preferences.layout !== 'dark');
-                body.classList.toggle('light-sidebar', preferences.sidebar === 'light');
-                body.classList.toggle('dark-sidebar', preferences.sidebar !== 'light');
-                body.classList.toggle('sidebar-mini', preferences.miniSidebar);
-                body.classList.toggle('topbar-static', !preferences.stickyHeader);
-                allowedColors.forEach(function (color) { body.classList.remove('theme-' + color); });
-                body.classList.add('theme-' + preferences.color);
-                renderControls();
-                window.requestAnimationFrame(function () {
-                    window.dispatchEvent(new Event('resize'));
-                });
-            }
-            function saveTheme() {
-                fetch('{{ url('theme/preferences') }}', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'), 'Accept': 'application/json' },
-                    body: JSON.stringify(preferences)
-                }).then(function (response) {
-                    if (!response.ok) throw new Error('Unable to save preferences');
-                    return response.json();
-                }).then(function () {
-                    status.textContent = 'Preferensi tampilan disimpan.';
-                }).catch(function () {
-                    status.textContent = 'Preferensi belum dapat disimpan.';
-                });
-            }
-            function updatePreference(key, value) {
-                preferences[key] = value;
-                preferences = normalize(preferences);
-                applyTheme();
-                saveTheme();
-            }
-            function setPanel(open) {
-                body.classList.toggle('theme-panel-open', open);
-                panel.setAttribute('aria-hidden', open ? 'false' : 'true');
-                panelToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
-                if (open) panelClose.focus();
-                else panelToggle.focus();
-            }
-
-            preferences = normalize(preferences);
-            applyTheme();
-            document.querySelectorAll('[data-theme-preference]').forEach(function (control) {
-                control.addEventListener('change', function () {
-                    updatePreference(control.getAttribute('data-theme-preference'), control.type === 'checkbox' ? control.checked : control.value);
-                });
-            });
-            panelToggle.addEventListener('click', function () { setPanel(!body.classList.contains('theme-panel-open')); });
-            panelClose.addEventListener('click', function () { setPanel(false); });
-            panelBackdrop.addEventListener('click', function () { setPanel(false); });
-            document.getElementById('themeReset').addEventListener('click', function () { preferences = Object.assign({}, defaults); applyTheme(); saveTheme(); });
-            window.addEventListener('keydown', function (event) { if (event.key === 'Escape' && body.classList.contains('theme-panel-open')) setPanel(false); });
-        }());        (function () { var backdrop = document.getElementById('sidebarBackdrop'); var toggle = document.getElementById('sidebarToggle'); var close = document.getElementById('sidebarClose'); function setSidebar(open) { document.body.classList.toggle('sidebar-open', open); toggle.setAttribute('aria-expanded', open ? 'true' : 'false'); } toggle.addEventListener('click', function () { setSidebar(!document.body.classList.contains('sidebar-open')); }); backdrop.addEventListener('click', function () { setSidebar(false); }); if (close) close.addEventListener('click', function () { setSidebar(false); }); window.addEventListener('keydown', function (event) { if (event.key === 'Escape') setSidebar(false); }); window.addEventListener('resize', function () { if (window.innerWidth >= 992) setSidebar(false); }); }());
-        document.addEventListener('DOMContentLoaded', function () { feather.replace(); });
+            function savePreference() { $.ajax({ url: '{{ url('theme/preferences') }}', method: 'POST', contentType: 'application/json', headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') }, data: JSON.stringify(preference) }); }
+            function updatePreference(key, value) { preference[key] = value; applyPreference(); savePreference(); }
+            applyPreference();
+            $('.select-layout').on('change', function () { updatePreference('layout', this.value === '2' ? 'dark' : 'light'); });
+            $('.select-sidebar').on('change', function () { updatePreference('sidebar', this.value === '1' ? 'light' : 'dark'); });
+            $('.choose-theme li').on('click', function (event) { event.preventDefault(); updatePreference('color', $(this).attr('title')); });
+            $('#mini_sidebar_setting').on('change', function () { updatePreference('miniSidebar', this.checked); });
+            $('#sticky_header_setting').on('change', function () { updatePreference('stickyHeader', this.checked); });
+            $('.btn-restore-theme').on('click', function (event) { event.preventDefault(); preference = Object.assign({}, defaults); applyPreference(); savePreference(); });
+        });
     </script>
     @stack('js')
 </body>

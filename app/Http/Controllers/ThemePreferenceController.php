@@ -15,7 +15,7 @@ class ThemePreferenceController extends Controller
             [
                 'layout' => 'light',
                 'sidebar_color' => 'dark',
-                'theme_color' => 'blue',
+                'theme_color' => 'white',
                 'mini_sidebar' => false,
                 'sticky_header' => true,
             ]
@@ -29,7 +29,7 @@ class ThemePreferenceController extends Controller
         $validated = $request->validate([
             'layout' => 'sometimes|in:light,dark',
             'sidebar' => 'sometimes|in:light,dark',
-            'color' => 'sometimes|in:blue,cyan,purple,green,orange,red,pink',
+            'color' => 'sometimes|in:white,cyan,black,purple,orange,green,red',
             'miniSidebar' => 'sometimes',
             'stickyHeader' => 'sometimes',
         ]);
@@ -39,7 +39,7 @@ class ThemePreferenceController extends Controller
             [
                 'layout' => 'light',
                 'sidebar_color' => 'dark',
-                'theme_color' => 'blue',
+                'theme_color' => 'white',
                 'mini_sidebar' => false,
                 'sticky_header' => true,
             ]

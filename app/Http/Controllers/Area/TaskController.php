@@ -373,9 +373,16 @@ class TaskController extends BaseController
         $result['status'] = 1;
         $task = Task::select('task.id', 'users.fullname', 'users.hex', 'client.customer', 'kode_task', 'task', 'order', 'deadline', 'price_order', 'pay_worker', 'margin', 'task_status', 'pay_status')
             ->leftJoin('users', 'task.worker_id', '=', 'users.id')
-            ->leftJoin('client', 'task.client_id', '=', 'client.id')
-            ->whereDate('deadline', '>=', $request->start)
-            ->whereDate('deadline', '<=', $request->end);
+            ->leftJoin('client', 'task.client_id', '=', 'client.id');
+
+        // Calendar requests normally include both dates. Keep them optional so
+        // direct requests without a date range do not pass null to whereDate().
+        if ($request->filled('start')) {
+            $task->whereDate('deadline', '>=', $request->input('start'));
+        }
+        if ($request->filled('end')) {
+            $task->whereDate('deadline', '<=', $request->input('end'));
+        }
 
         if ($request->has('worker_id') && $request->worker_id != '' && $request->worker_id != 'all') {
             $task->where('worker_id', $request->worker_id);

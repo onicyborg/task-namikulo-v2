@@ -9,6 +9,12 @@
 
     <div class="card">
         <div class="card-body">
+            <div class="d-flex flex-wrap align-items-center mb-3" aria-label="Keterangan status agenda" style="gap: 8px 16px;">
+                <span class="small font-weight-bold text-muted">Status agenda:</span>
+                <span class="badge" style="background:#F59E0B; color:#1F2937;">Waiting</span>
+                <span class="badge" style="background:#2563EB; color:#FFFFFF;">Progress</span>
+                <span class="badge" style="background:#15803D; color:#FFFFFF;">Done</span>
+            </div>
             @if (Auth::user()->role == 'Admin')
                 <div class="filter-bar mb-3">
                     <div class="form-group" style="min-width: 200px; margin-bottom: 0;">
@@ -116,7 +122,16 @@
             initialView: 'dayGridMonth', initialDate: TODAY, editable: false, dayMaxEvents: true, navLinks: true,
             datesSet: function(info) { date_start = info.startStr; date_end = info.endStr; loadCalendar(); },
             eventClick: function(info) { detailCalendar(info.event.id); },
-            eventDidMount: function(info) { info.el.style.backgroundColor = info.event.backgroundColor; info.el.style.borderColor = info.event.borderColor; info.el.style.color = info.event.textColor; }
+            eventDidMount: function(info) {
+                info.el.style.backgroundColor = info.event.backgroundColor;
+                info.el.style.borderColor = info.event.borderColor;
+                info.el.style.color = info.event.textColor;
+                info.el.style.fontWeight = '700';
+                info.el.querySelectorAll('.fc-event-main, .fc-event-title').forEach(function(element) {
+                    element.style.color = info.event.textColor;
+                    element.style.fontWeight = '700';
+                });
+            }
         });
         calendar.render();
 
@@ -126,8 +141,16 @@
                 success: function(response) {
                     if (response.status == 1) {
                         var data = response.task;
+                        var eventPalette = {
+                            Waiting: { background: '#F59E0B', border: '#B45309', text: '#1F2937' },
+                            Progress: { background: '#2563EB', border: '#1E3A8A', text: '#FFFFFF' },
+                            Done: { background: '#15803D', border: '#14532D', text: '#FFFFFF' }
+                        };
                         calendar.getEvents().forEach(function(event) { event.remove(); });
-                        data.forEach(function(task) { var eventPalette = { Waiting: { background: '#90CAF9', border: '#2196F3', text: '#0D47A1' }, Progress: { background: '#2196F3', border: '#0D47A1', text: '#FFFFFF' }, Done: { background: '#76ABAE', border: '#4F8588', text: '#222831' } }; var palette = eventPalette[task.task_status] || { background: task.hex || '#2196F3', border: task.hex || '#0D47A1', text: '#FFFFFF' }; calendar.addEvent({ id: task.id, title: task.fullname + ' - ' + task.task, start: task.deadline, end: task.deadline, description: task.task, className: 'calendar-event', backgroundColor: palette.background, borderColor: palette.border, textColor: palette.text, allDay: true }); });
+                        data.forEach(function(task) {
+                            var palette = eventPalette[task.task_status] || { background: '#7C3AED', border: '#4C1D95', text: '#FFFFFF' };
+                            calendar.addEvent({ id: task.id, title: task.fullname + ' - ' + task.task, start: task.deadline, end: task.deadline, description: task.task, className: 'calendar-event calendar-event-' + String(task.task_status || 'unknown').toLowerCase(), backgroundColor: palette.background, borderColor: palette.border, textColor: palette.text, allDay: true });
+                        });
                     } else { Swal.fire("Oops!", response.msg, "error"); }
                 },
                 error: function(response) { errorAjaxResponse(response); }

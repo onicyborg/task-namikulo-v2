@@ -15,10 +15,10 @@
                         <i data-feather="layers"></i>
                     </div>
                 </div>
-                <div style="margin-top: 0.75rem; display: flex; gap: 0.5rem;">
-                    <span class="badge badge-warning" style="font-size: 0.7rem; padding: 0.25rem 0.5rem;">{{ $statistik['waiting'] }} Waiting</span>
-                    <span class="badge badge-primary" style="font-size: 0.7rem; padding: 0.25rem 0.5rem;">{{ $statistik['progress'] }} Progress</span>
-                    <span class="badge badge-success" style="font-size: 0.7rem; padding: 0.25rem 0.5rem;">{{ $statistik['done'] }} Done</span>
+                <div class="stat-breakdown" aria-label="Rincian status task">
+                    <span class="badge badge-warning">{{ $statistik['waiting'] }} Waiting</span>
+                    <span class="badge badge-primary">{{ $statistik['progress'] }} Progress</span>
+                    <span class="badge badge-success">{{ $statistik['done'] }} Done</span>
                 </div>
             </div>
         </div>

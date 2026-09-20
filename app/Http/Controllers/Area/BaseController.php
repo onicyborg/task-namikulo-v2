@@ -19,7 +19,7 @@ class BaseController extends Controller
             [
                 'layout' => 'light',
                 'sidebar_color' => 'dark',
-                'theme_color' => 'blue',
+                'theme_color' => 'white',
                 'mini_sidebar' => false,
                 'sticky_header' => true,
             ]
@@ -27,7 +27,14 @@ class BaseController extends Controller
 
         $data['layout'] = $pref->layout;
         $data['sidebarColor'] = $pref->sidebar_color === 'light' ? 'light-sidebar' : 'dark-sidebar';
-        $data['themeColor'] = $pref->theme_color;
+        // The previous UI stored blue/pink; map those values to Otika's palette.
+        $data['themeColor'] = match ($pref->theme_color) {
+            'blue' => 'white',
+            'pink' => 'red',
+            default => in_array($pref->theme_color, ['white', 'cyan', 'black', 'purple', 'orange', 'green', 'red'], true)
+                ? $pref->theme_color
+                : 'white',
+        };
         $data['miniSidebar'] = $pref->mini_sidebar;
         $data['stickyHeader'] = $pref->sticky_header;
 
