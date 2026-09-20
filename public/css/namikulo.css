@@ -1189,6 +1189,14 @@ body.light-sidebar .brand-link:hover, body.light-sidebar .brand-link:focus, body
     color: var(--accent-primary, #6777ef);
 }
 
+/* Apply the same hover surface to the main table and the FixedColumns clone
+   in light mode as well. */
+.dataTables_wrapper table tbody tr.task-row-hover td,
+.dataTables_wrapper .DTFC_LeftWrapper table tbody tr.task-row-hover td,
+.dataTables_wrapper .DTFC_LeftBodyWrapper table tbody tr.task-row-hover td {
+    background: #f6fbfa !important;
+}
+
 /* Keep DataTables FixedColumns in sync with the dark task table. The cloned
    left table otherwise falls back to its light-mode background. */
 body.dark .dataTables_wrapper .DTFC_LeftWrapper,
