@@ -1,4 +1,131 @@
 @extends('area._base')
+@push('head')
+    <style>
+        .calendar-loading-shell {
+            position: relative;
+        }
+
+        .calendar-loading {
+            position: absolute;
+            inset: 0;
+            z-index: 10;
+            display: none;
+            min-height: 320px;
+            background: color-mix(in srgb, var(--nm-surface, #ffffff) 72%, transparent);
+        }
+
+        .calendar-loading .loader {
+            display: block !important;
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            background-color: transparent;
+            opacity: 1;
+        }
+
+        @supports not (background: color-mix(in srgb, white 50%, transparent)) {
+            .calendar-loading {
+                background: rgba(255, 255, 255, 0.72);
+            }
+        }
+
+        body.dark .calendar-loading {
+            background: rgba(15, 23, 42, 0.72);
+        }
+
+        .fc-more-popover {
+            z-index: 1060;
+            width: min(360px, calc(100vw - 24px));
+            max-height: min(480px, calc(100vh - 120px));
+            overflow: hidden;
+            border: 1px solid var(--nm-border, #e5e7eb);
+            border-radius: 12px;
+            background: var(--nm-surface, #ffffff);
+            box-shadow: 0 16px 34px rgba(15, 23, 42, 0.18);
+        }
+
+        .fc-more-popover .fc-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex: 0 0 auto;
+            min-height: 42px;
+            padding: 10px 12px;
+            border-bottom: 1px solid var(--nm-border, #e5e7eb);
+            background: var(--nm-surface-muted, #f8fafc);
+            color: var(--nm-ink, #1f2937);
+            font-size: 13px;
+            font-weight: 800;
+        }
+
+        .fc-more-popover .fc-header .fc-close {
+            order: 2;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            flex: 0 0 24px;
+            width: 24px;
+            height: 24px;
+            float: none;
+            margin: 0 0 0 12px;
+            color: var(--nm-muted, #64748b);
+            font-size: 0;
+            line-height: 1;
+        }
+
+        .fc-more-popover .fc-header .fc-close::after {
+            content: "\00d7";
+            position: static;
+            top: auto;
+            font-family: Arial, sans-serif;
+            font-size: 22px;
+            font-weight: 400;
+            line-height: 20px;
+        }
+
+        .fc-more-popover .fc-header .fc-title {
+            order: 1;
+            flex: 1 1 auto;
+            float: none;
+            margin: 0;
+            text-align: left;
+        }
+
+        .fc-more-popover .fc-body {
+            max-height: calc(min(480px, 100vh - 120px) - 42px);
+            overflow-x: hidden;
+            overflow-y: auto;
+            padding: 8px;
+            scrollbar-width: thin;
+        }
+
+        .fc-more-popover .fc-event-container {
+            padding: 0;
+        }
+
+        .fc-more-popover .fc-event {
+            margin: 4px 0;
+            border-radius: 6px;
+        }
+
+        body.dark .fc-more-popover {
+            border-color: #334155;
+            background: #1e293b;
+            box-shadow: 0 16px 34px rgba(0, 0, 0, 0.34);
+        }
+
+        body.dark .fc-more-popover .fc-header {
+            border-bottom-color: #334155;
+            background: #0f172a;
+            color: #e2e8f0;
+        }
+
+        body.dark .fc-more-popover .fc-header .fc-close {
+            color: #94a3b8;
+        }
+    </style>
+@endpush
 @section('content')
     <div class="page-header">
         <div class="page-header-left">
@@ -9,12 +136,6 @@
 
     <div class="card">
         <div class="card-body">
-            <div class="d-flex flex-wrap align-items-center mb-3" aria-label="Keterangan status agenda" style="gap: 8px 16px;">
-                <span class="small font-weight-bold text-muted">Status agenda:</span>
-                <span class="badge" style="background:#F59E0B; color:#1F2937;">Waiting</span>
-                <span class="badge" style="background:#2563EB; color:#FFFFFF;">Progress</span>
-                <span class="badge" style="background:#15803D; color:#FFFFFF;">Done</span>
-            </div>
             @if (Auth::user()->role == 'Admin')
                 <div class="filter-bar mb-3">
                     <div class="form-group" style="min-width: 200px; margin-bottom: 0;">
@@ -23,7 +144,12 @@
                     </div>
                 </div>
             @endif
-            <div id="calendar" class="calendar-container"></div>
+            <div class="calendar-loading-shell">
+                <div id="calendar" class="calendar-container"></div>
+                <div id="calendar-loading" class="calendar-loading" role="status" aria-live="polite" aria-label="Memuat kalender">
+                    <div class="loader" aria-hidden="true"></div>
+                </div>
+            </div>
         </div>
     </div>
 @endsection
@@ -106,10 +232,21 @@
                 ajax: {url: '{{ url('worker/search') }}', data: {'empty_result': 'true'}, dataType: 'json', delay: 250, processResults: function(d) { return { results: d }; }, cache: true},
             });
             $("#worker_id").select2("trigger", "select", {data: {id: 'all', text: 'Seluruh Worker'}});
+            $('#modal_detail_calendar').on('mousedown.calendarPopover', function(event) {
+                event.stopPropagation();
+            });
+            $(document).on('mousedown.calendarPopover', '.modal-backdrop', function(event) {
+                event.stopImmediatePropagation();
+            });
         });
 
         var calendar;
         var date_start, date_end;
+        var calendarRequest;
+
+        function setCalendarLoading(isLoading) {
+            $('#calendar-loading').toggle(isLoading);
+        }
 
         calendar = $('#calendar').fullCalendar({
             height: 'auto',
@@ -143,34 +280,46 @@
 
         function loadCalendar() {
             var worker_id = $("#worker_id").val();
-            $.ajax({headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')}, type: "GET", url: "{{ url('task/get-by-date') }}", data: {start: date_start, end: date_end, worker_id: worker_id}, dataType: 'json',
+            if (calendarRequest) {
+                calendarRequest.abort();
+            }
+            setCalendarLoading(true);
+            calendarRequest = $.ajax({headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')}, type: "GET", url: "{{ url('task/get-by-date') }}", data: {start: date_start, end: date_end, worker_id: worker_id}, dataType: 'json',
                 success: function(response) {
                     if (response.status == 1) {
                         var data = response.task;
-                        var eventPalette = {
-                            Waiting: { background: '#F59E0B', border: '#B45309', text: '#1F2937' },
-                            Progress: { background: '#2563EB', border: '#1E3A8A', text: '#FFFFFF' },
-                            Done: { background: '#15803D', border: '#14532D', text: '#FFFFFF' }
-                        };
                         calendar.fullCalendar('removeEvents');
                         data.forEach(function(task) {
-                            var palette = eventPalette[task.task_status] || { background: '#7C3AED', border: '#4C1D95', text: '#FFFFFF' };
+                            var workerColor = /^#[0-9A-F]{6}$/i.test(task.hex || '') ? task.hex : '#64748B';
+                            var colorValue = workerColor.substring(1);
+                            var red = parseInt(colorValue.substring(0, 2), 16);
+                            var green = parseInt(colorValue.substring(2, 4), 16);
+                            var blue = parseInt(colorValue.substring(4, 6), 16);
+                            var textColor = (red * 299 + green * 587 + blue * 114) / 1000 >= 150 ? '#1F2937' : '#FFFFFF';
                             calendar.fullCalendar('renderEvent', {
                                 id: task.id,
                                 title: task.fullname + ' - ' + task.task,
                                 start: task.deadline,
                                 end: task.deadline,
                                 description: task.task,
-                                className: 'calendar-event calendar-event-' + String(task.task_status || 'unknown').toLowerCase(),
-                                backgroundColor: palette.background,
-                                borderColor: palette.border,
-                                textColor: palette.text,
+                                className: 'calendar-event',
+                                backgroundColor: workerColor,
+                                borderColor: workerColor,
+                                textColor: textColor,
                                 allDay: true
                             }, true);
                         });
                     } else { Swal.fire("Oops!", response.msg, "error"); }
                 },
-                error: function(response) { errorAjaxResponse(response); }
+                error: function(response) {
+                    if (response.statusText !== 'abort') {
+                        errorAjaxResponse(response);
+                    }
+                },
+                complete: function() {
+                    setCalendarLoading(false);
+                    calendarRequest = null;
+                }
             });
         }
 
