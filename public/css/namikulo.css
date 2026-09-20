@@ -1288,3 +1288,75 @@ body.light-sidebar .brand-link:hover, body.light-sidebar .brand-link:focus, body
 .modal .close:focus .modal-close-mark {
     color: var(--accent-primary, #6777ef);
 }
+
+/* Keep DataTables FixedColumns in sync with the dark task table. The cloned
+   left table otherwise falls back to its light-mode background. */
+body.dark .dataTables_wrapper .DTFC_LeftWrapper,
+body.dark .dataTables_wrapper .DTFC_LeftHeadWrapper,
+body.dark .dataTables_wrapper .DTFC_LeftBodyWrapper,
+body.dark .dataTables_wrapper .DTFC_LeftBodyLiner,
+body.dark .dataTables_wrapper .dataTables_scrollHead,
+body.dark .dataTables_wrapper .dataTables_scrollHeadInner,
+body.dark .dataTables_wrapper .dataTables_scrollBody {
+    background: #31363f !important;
+    border-right: 0 !important;
+    box-shadow: none !important;
+}
+
+body.dark .dataTables_wrapper .dataTables_scrollHead,
+body.dark .dataTables_wrapper .dataTables_scrollHeadInner,
+body.dark .dataTables_wrapper .DTFC_LeftHeadWrapper {
+    background: #222831 !important;
+    background-image: none !important;
+    border: 0 !important;
+}
+
+body.dark .dataTables_wrapper .DTFC_LeftWrapper table,
+body.dark .dataTables_wrapper .DTFC_LeftHeadWrapper table,
+body.dark .dataTables_wrapper .DTFC_LeftBodyWrapper table {
+    color: #eeeeee !important;
+    background: #31363f !important;
+    border-right: 0 !important;
+}
+
+body.dark .dataTables_wrapper .DTFC_LeftWrapper table thead th,
+body.dark .dataTables_wrapper .DTFC_LeftHeadWrapper table thead th,
+body.dark .dataTables_wrapper .dataTables_scrollHead table thead th {
+    color: #eeeeee !important;
+    background: #222831 !important;
+    background-color: #222831 !important;
+    background-image: none !important;
+    border-color: rgba(118, 171, 174, .45) !important;
+    border-bottom-width: 1px !important;
+    box-shadow: none !important;
+}
+
+body.dark .dataTables_wrapper .DTFC_LeftWrapper table thead th:last-child,
+body.dark .dataTables_wrapper .DTFC_LeftWrapper table tbody td:last-child {
+    border-right: 0 !important;
+}
+
+body.dark .dataTables_wrapper .DTFC_LeftWrapper table tbody td,
+body.dark .dataTables_wrapper .DTFC_LeftBodyWrapper table tbody td {
+    color: #eeeeee !important;
+    background: #31363f !important;
+    border-color: rgba(118, 171, 174, .32) !important;
+}
+
+/* The fixed header and body are separate cloned tables. Remove the first
+   body-row border so it does not stack with the header's bottom border. */
+body.dark .dataTables_wrapper .DTFC_LeftBodyWrapper table tbody tr:first-child td,
+body.dark .dataTables_wrapper .DTFC_LeftBodyLiner table tbody tr:first-child td {
+    border-top: 0 !important;
+}
+
+body.dark .dataTables_wrapper .DTFC_LeftWrapper table tbody tr:hover td,
+body.dark .dataTables_wrapper .DTFC_LeftBodyWrapper table tbody tr:hover td {
+    background: #222831 !important;
+}
+
+body.dark .dataTables_wrapper table tbody tr.task-row-hover td,
+body.dark .dataTables_wrapper .DTFC_LeftWrapper table tbody tr.task-row-hover td,
+body.dark .dataTables_wrapper .DTFC_LeftBodyWrapper table tbody tr.task-row-hover td {
+    background: #222831 !important;
+}

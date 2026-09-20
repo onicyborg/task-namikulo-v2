@@ -512,6 +512,20 @@
             }
         });
 
+        // FixedColumns renders the first columns in a cloned table. Keep the
+        // row hover state synchronized between the clone and the main table.
+        $(document).off('mouseenter.taskFixedRowHover mouseleave.taskFixedRowHover', '.dataTables_scrollBody table tbody tr, .DTFC_LeftBodyWrapper table tbody tr');
+        $(document).on('mouseenter.taskFixedRowHover', '.dataTables_scrollBody table tbody tr, .DTFC_LeftBodyWrapper table tbody tr', function() {
+            var rowIndex = $(this).index();
+            var wrapper = $(this).closest('.dataTables_wrapper');
+            wrapper.find('table tbody tr').removeClass('task-row-hover').each(function() {
+                if ($(this).index() === rowIndex) $(this).addClass('task-row-hover');
+            });
+        });
+        $(document).on('mouseleave.taskFixedRowHover', '.dataTables_scrollBody table tbody tr, .DTFC_LeftBodyWrapper table tbody tr', function() {
+            $(this).closest('.dataTables_wrapper').find('table tbody tr').removeClass('task-row-hover');
+        });
+
         $("#search_filter").on("keyup", function() { datatable.search($(this).val()).draw(); });
 
         function reloadDataTable() {
