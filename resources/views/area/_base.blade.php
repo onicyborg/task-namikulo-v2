@@ -29,6 +29,7 @@
     {{-- Custom content helpers stay local; Otika framework assets use the deployed asset host. --}}
     <link rel="stylesheet" href="{{ asset('css/namikulo.css') }}?v={{ filemtime(public_path('css/namikulo.css')) }}">
     <link rel="stylesheet" href="{{ $otikaAssets }}/css/app.min.css">
+    <link rel="stylesheet" href="{{ $otikaAssets }}/bundles/fullcalendar/fullcalendar.min.css">
     <link rel="stylesheet" href="{{ $otikaAssets }}/bundles/prism/prism.css">
     <link rel="stylesheet" href="{{ $otikaAssets }}/bundles/datatables/datatables.min.css">
     <link rel="stylesheet" href="{{ $otikaAssets }}/bundles/datatables/DataTables-1.10.16/css/dataTables.bootstrap4.min.css">
@@ -39,12 +40,16 @@
     <link rel="stylesheet" href="{{ $otikaAssets }}/css/custom.css">
     {{-- Otika's FontAwesome files are not served with CORS headers; use a CORS-enabled equivalent. --}}
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    {{-- Load Otika's Nunito family from a CORS-enabled provider. --}}
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap">
     <style>
         /* The deployed Otika CSS references font files without CORS headers. Keep the Otika UI
            intact while preventing the browser from requesting those broken font sources. */
         body,
         body *:not(.fa):not(.fas):not(.far):not(.fab):not(.fal):not(.fad):not(.fc-icon) {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif !important;
+            font-family: "Nunito", "Segoe UI", Arial, sans-serif !important;
         }
         .sidebar-brand > a {
             display: inline-flex;
@@ -140,7 +145,7 @@
     <script src="{{ $otikaAssets }}/bundles/datatables/DataTables-1.10.16/js/dataTables.bootstrap4.min.js"></script>
     <script src="{{ $otikaAssets }}/bundles/jquery-ui/jquery-ui.min.js"></script>
     <script src="{{ $otikaAssets }}/bundles/select2/dist/js/select2.full.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js"></script>
+    <script src="{{ $otikaAssets }}/bundles/fullcalendar/fullcalendar.min.js"></script>
     <script src="{{ $otikaAssets }}/js/scripts.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.15.10/dist/sweetalert2.all.min.js"></script>
     <script>

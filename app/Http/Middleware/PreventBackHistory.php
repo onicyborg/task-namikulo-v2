@@ -11,8 +11,13 @@ class PreventBackHistory
     {
         $response = $next($request);
 
-        return $response->header('Cache-Control', 'nocache, no-store, must-revalidate')
-            ->header('Pragma', 'no-cache')
-            ->header('Expires', '0');
+        // BinaryFileResponse (used by Excel::download) does not expose
+        // Laravel's fluent header() helper. Set headers through Symfony's
+        // response header bag so normal and file responses are both handled.
+        $response->headers->set('Cache-Control', 'nocache, no-store, must-revalidate');
+        $response->headers->set('Pragma', 'no-cache');
+        $response->headers->set('Expires', '0');
+
+        return $response;
     }
 }

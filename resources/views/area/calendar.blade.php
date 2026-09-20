@@ -110,30 +110,36 @@
 
         var calendar;
         var date_start, date_end;
-        var todayDate = new Date();
-        var YM = todayDate.toISOString().slice(0, 7);
-        var TODAY = todayDate.getFullYear() + '-' + String(todayDate.getMonth() + 1).padStart(2, '0') + '-' + String(todayDate.getDate()).padStart(2, '0');
 
-        var calendarEl = document.getElementById('calendar');
-        calendar = new FullCalendar.Calendar(calendarEl, {
-            headerToolbar: { left: 'prev,next today', center: 'title', right: 'dayGridMonth,listMonth' },
-            height: 'auto', contentHeight: 'auto', aspectRatio: 1.35, nowIndicator: true, now: TODAY + 'T09:25:00',
-            views: { dayGridMonth: { buttonText: 'month' } },
-            initialView: 'dayGridMonth', initialDate: TODAY, editable: false, dayMaxEvents: true, navLinks: true,
-            datesSet: function(info) { date_start = info.startStr; date_end = info.endStr; loadCalendar(); },
-            eventClick: function(info) { detailCalendar(info.event.id); },
-            eventDidMount: function(info) {
-                info.el.style.backgroundColor = info.event.backgroundColor;
-                info.el.style.borderColor = info.event.borderColor;
-                info.el.style.color = info.event.textColor;
-                info.el.style.fontWeight = '700';
-                info.el.querySelectorAll('.fc-event-main, .fc-event-title').forEach(function(element) {
-                    element.style.color = info.event.textColor;
-                    element.style.fontWeight = '700';
+        calendar = $('#calendar').fullCalendar({
+            height: 'auto',
+            defaultView: 'month',
+            editable: false,
+            selectable: false,
+            eventLimit: true,
+            header: {
+                left: 'prev,next today',
+                center: 'title',
+                right: 'month,listMonth'
+            },
+            viewRender: function(view) {
+                date_start = view.start.format('YYYY-MM-DD');
+                date_end = view.end.format('YYYY-MM-DD');
+                loadCalendar();
+            },
+            eventClick: function(event) {
+                detailCalendar(event.id);
+            },
+            eventRender: function(event, element) {
+                element.css({
+                    backgroundColor: event.backgroundColor,
+                    borderColor: event.borderColor,
+                    color: event.textColor,
+                    fontWeight: '700'
                 });
+                element.find('.fc-title').css({color: event.textColor, fontWeight: '700'});
             }
         });
-        calendar.render();
 
         function loadCalendar() {
             var worker_id = $("#worker_id").val();
@@ -146,10 +152,21 @@
                             Progress: { background: '#2563EB', border: '#1E3A8A', text: '#FFFFFF' },
                             Done: { background: '#15803D', border: '#14532D', text: '#FFFFFF' }
                         };
-                        calendar.getEvents().forEach(function(event) { event.remove(); });
+                        calendar.fullCalendar('removeEvents');
                         data.forEach(function(task) {
                             var palette = eventPalette[task.task_status] || { background: '#7C3AED', border: '#4C1D95', text: '#FFFFFF' };
-                            calendar.addEvent({ id: task.id, title: task.fullname + ' - ' + task.task, start: task.deadline, end: task.deadline, description: task.task, className: 'calendar-event calendar-event-' + String(task.task_status || 'unknown').toLowerCase(), backgroundColor: palette.background, borderColor: palette.border, textColor: palette.text, allDay: true });
+                            calendar.fullCalendar('renderEvent', {
+                                id: task.id,
+                                title: task.fullname + ' - ' + task.task,
+                                start: task.deadline,
+                                end: task.deadline,
+                                description: task.task,
+                                className: 'calendar-event calendar-event-' + String(task.task_status || 'unknown').toLowerCase(),
+                                backgroundColor: palette.background,
+                                borderColor: palette.border,
+                                textColor: palette.text,
+                                allDay: true
+                            }, true);
                         });
                     } else { Swal.fire("Oops!", response.msg, "error"); }
                 },

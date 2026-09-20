@@ -17,7 +17,7 @@
 }
 * { box-sizing: border-box; }
 html { min-height: 100%; }
-body { min-width: 320px; min-height: 100vh; margin: 0; background: var(--nm-canvas); color: var(--nm-text); font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-size: 14px; line-height: 1.5; }
+body { min-width: 320px; min-height: 100vh; margin: 0; background: var(--nm-canvas); color: var(--nm-text); font-family: 'Nunito', 'Segoe UI', Arial, sans-serif; font-size: 14px; line-height: 1.5; }
 a { color: var(--nm-primary); }
 a:hover { color: var(--nm-primary-dark); }
 button, input, select, textarea { font: inherit; }
@@ -218,16 +218,6 @@ table.dataTable thead .sorting_desc::after { color: var(--nm-primary) !important
 .profile-info-value { color: var(--nm-ink); font-size: 13px; font-weight: 600; overflow-wrap: anywhere; }
 .profile-card-footer { padding: 16px 24px 24px; }
 
-.calendar-container { min-height: 650px; padding: 20px; }
-.fc { color: var(--nm-text); font-family: inherit; font-size: 13px; }
-.fc .fc-toolbar { flex-wrap: wrap; gap: 12px; }
-.fc .fc-toolbar-title { color: var(--nm-ink); font-size: 17px; font-weight: 800; }
-.fc .fc-button { border: 1px solid #d0d5dd; border-radius: 5px !important; background: #fff; color: #344054; font-size: 12px; font-weight: 700; box-shadow: none; }
-.fc .fc-button:hover, .fc .fc-button-primary:not(:disabled).fc-button-active { border-color: var(--nm-primary); background: var(--nm-primary); color: #fff; }
-.fc-theme-standard td, .fc-theme-standard th { border-color: #eef1f3; }
-.fc .fc-col-header-cell-cushion { padding: 9px 4px; color: var(--nm-muted); font-size: 11px; text-decoration: none; text-transform: uppercase; }
-.fc .fc-daygrid-day-number { padding: 7px; color: var(--nm-text); font-weight: 600; text-decoration: none; }
-.fc .fc-daygrid-event { border-radius: 4px; font-size: 11px; }
 
 .modal-content { border: 0; border-radius: var(--nm-radius); box-shadow: 0 20px 40px rgba(16,24,40,.2); }
 .modal-header { align-items: center; padding: 18px 22px; border-bottom: 1px solid var(--nm-line); }
@@ -315,9 +305,6 @@ body.dark .swal2-actions .swal2-delete-cancel:hover { background: #31363f !impor
   .table-responsive .table, .detail-table-wrapper .detail-table { min-width: 760px; }
   .dataTables_wrapper .dataTables_info, .dataTables_wrapper .dataTables_length, .dataTables_wrapper .dataTables_paginate { padding-left: 16px; padding-right: 16px; }
   .dataTables_wrapper .dataTables_paginate { white-space: nowrap; }
-  .calendar-container { min-height: 520px; padding: 14px 8px; }
-  .fc .fc-toolbar-title { font-size: 15px; }
-  .fc .fc-button { padding: .35em .55em; font-size: 11px; }
   .profile-card-header, .profile-card-body, .profile-card-footer { padding-left: 16px; padding-right: 16px; }
   .app-footer { flex-direction: column; }
 }
@@ -860,93 +847,6 @@ body.light-sidebar .sidebar-close:hover {
   background: #90caf9;
   color: #0d47a1;
 }
-/* Calendar controls and theme contrast. */
-.calendar-container { padding: 20px; border: 1px solid rgba(33, 150, 243, .14); border-radius: 8px; background: #ffffff; }
-.fc .fc-toolbar { align-items: center; margin-bottom: 18px; }
-.fc .fc-toolbar-title { color: #0d47a1; font-size: 18px; letter-spacing: 0; }
-.fc .fc-button-group { gap: 6px; }
-.fc .fc-button { min-height: 36px; padding: 8px 12px; border: 1px solid #90caf9 !important; border-radius: 6px !important; background: #ffffff !important; color: #0d47a1 !important; font-size: 12px; font-weight: 700; line-height: 1; box-shadow: none !important; transition: background-color .16s ease, border-color .16s ease, color .16s ease; }
-.fc .fc-button:hover, .fc .fc-button:focus, .fc .fc-button-primary:not(:disabled).fc-button-active { border-color: #2196f3 !important; background: #e3f2fd !important; color: #0d47a1 !important; }
-.fc .fc-button-primary:not(:disabled).fc-button-active { box-shadow: inset 0 0 0 1px #2196f3 !important; }
-.fc .fc-button:disabled { opacity: .55; cursor: not-allowed; }
-.fc-theme-standard .fc-scrollgrid, .fc-theme-standard td, .fc-theme-standard th { border-color: #bbdefb; }
-.fc .fc-col-header-cell { background: #e3f2fd; }
-.fc .fc-col-header-cell-cushion { padding: 10px 4px; color: #0d47a1; font-size: 11px; font-weight: 800; }
-.fc .fc-daygrid-day-number { padding: 8px; color: #263238; font-weight: 700; }
-.fc .fc-day-today { background: rgba(144, 202, 249, .22) !important; }
-.fc .fc-day-today .fc-daygrid-day-number { color: #0d47a1; font-weight: 800; }
-.fc .fc-daygrid-event { min-height: 24px; margin: 3px 4px; padding: 4px 6px; border-radius: 5px; font-size: 11px; font-weight: 700; line-height: 1.25; }
-.fc .fc-event-main, .fc .fc-event-title { color: inherit; }
-.fc .fc-list { border-color: #bbdefb; }
-.fc .fc-list-day-cushion { background: #e3f2fd; }
-.fc .fc-list-day-text, .fc .fc-list-day-side-text { color: #0d47a1; font-weight: 800; }
-.fc .fc-list-event td { color: #263238; border-color: #bbdefb; }
-body.dark .calendar-container { border-color: rgba(118, 171, 174, .45); background: #31363f; }
-body.dark .fc .fc-toolbar-title { color: #eeeeee; }
-body.dark .fc .fc-button { border-color: rgba(118, 171, 174, .68) !important; background: #31363f !important; color: #eeeeee !important; }
-body.dark .fc .fc-button:hover, body.dark .fc .fc-button:focus, body.dark .fc .fc-button-primary:not(:disabled).fc-button-active { border-color: #76abae !important; background: #222831 !important; color: #eeeeee !important; }
-body.dark .fc-theme-standard .fc-scrollgrid, body.dark .fc-theme-standard td, body.dark .fc-theme-standard th, body.dark .fc .fc-list { border-color: rgba(118, 171, 174, .45); }
-body.dark .fc .fc-col-header-cell, body.dark .fc .fc-list-day-cushion { background: #222831; }
-body.dark .fc .fc-col-header-cell-cushion, body.dark .fc .fc-list-day-text, body.dark .fc .fc-list-day-side-text { color: #eeeeee; }
-body.dark .fc .fc-daygrid-day-number, body.dark .fc .fc-list-event td { color: #eeeeee; }
-body.dark .fc .fc-day-today { background: rgba(118, 171, 174, .18) !important; }
-body.dark .fc .fc-day-today .fc-daygrid-day-number { color: #76abae; }
-body.dark .fc .fc-list-event:hover td { background: #222831; }
-@media (max-width: 575.98px) { .calendar-container { padding: 12px 8px; } .fc .fc-toolbar { gap: 10px; } .fc .fc-toolbar-title { font-size: 15px; } .fc .fc-button { min-height: 34px; padding: 7px 9px; font-size: 11px; } .fc .fc-toolbar-chunk { display: flex; gap: 5px; } }
-/* Calendar list view readability. */
-.fc .fc-list {
-  overflow: hidden;
-  border-radius: 6px;
-  background: #ffffff;
-}
-.fc .fc-list-table {
-  color: #263238;
-}
-.fc .fc-list-event td,
-.fc .fc-list-event-time,
-.fc .fc-list-event-title,
-.fc .fc-list-event-title a,
-.fc .fc-list-event-graphic {
-  color: #263238 !important;
-}
-.fc .fc-list-event-title,
-.fc .fc-list-event-title a {
-  font-weight: 700;
-  text-decoration: none;
-}
-.fc .fc-list-event-time {
-  width: 96px;
-  font-size: 12px;
-  font-weight: 600;
-  white-space: nowrap;
-}
-.fc .fc-list-event-dot {
-  border-color: #2196f3 !important;
-}
-.fc .fc-list-event:hover td {
-  background: #e3f2fd;
-}
-body.dark .fc .fc-list {
-  background: #31363f;
-}
-body.dark .fc .fc-list-table,
-body.dark .fc .fc-list-event td,
-body.dark .fc .fc-list-event-time,
-body.dark .fc .fc-list-event-title,
-body.dark .fc .fc-list-event-title a,
-body.dark .fc .fc-list-event-graphic {
-  color: #eeeeee !important;
-}
-body.dark .fc .fc-list-event-title,
-body.dark .fc .fc-list-event-title a {
-  color: #eeeeee !important;
-}
-body.dark .fc .fc-list-event-dot {
-  border-color: #76abae !important;
-}
-body.dark .fc .fc-list-event:hover td {
-  background: #222831 !important;
-}
 /* Global DataTables and action button polish. */
 .btn-info { background: #2196f3; border-color: #2196f3; color: #ffffff; }
 .btn-info:hover, .btn-info:focus { background: #0d47a1; border-color: #0d47a1; color: #ffffff; }
@@ -1277,7 +1177,7 @@ body.light-sidebar .brand-link:hover, body.light-sidebar .brand-link:focus, body
     justify-content: center;
     width: 24px;
     height: 24px;
-    font-family: Arial, sans-serif;
+    font-family: inherit;
     font-size: 28px;
     font-weight: 400;
     line-height: 20px;
@@ -1359,4 +1259,24 @@ body.dark .dataTables_wrapper table tbody tr.task-row-hover td,
 body.dark .dataTables_wrapper .DTFC_LeftWrapper table tbody tr.task-row-hover td,
 body.dark .dataTables_wrapper .DTFC_LeftBodyWrapper table tbody tr.task-row-hover td {
     background: #222831 !important;
+}
+
+/* Otika's FullCalendar stylesheet is light by default. Keep its layout and
+   controls intact while restoring readable day/date text in dark mode. */
+body.dark .fc,
+body.dark .fc th,
+body.dark .fc .fc-day-header,
+body.dark .fc .fc-day-header a,
+body.dark .fc .fc-day-number {
+    color: #eeeeee !important;
+}
+
+body.dark .fc .fc-day-header,
+body.dark .fc .fc-widget-header,
+body.dark .fc .fc-widget-content {
+    background: #31363f !important;
+}
+
+body.dark .fc .fc-other-month .fc-day-number {
+    color: rgba(238, 238, 238, .46) !important;
 }

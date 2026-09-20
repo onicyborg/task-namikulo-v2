@@ -7,14 +7,14 @@
     <title>Masuk - Namikulo</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.15.10/dist/sweetalert2.min.css">
     <link rel="shortcut icon" type="image/x-icon" href="{{ asset('files/img/namikulo.png') }}">
     <style>
         :root { --primary: #2196f3; --primary-dark: #0d47a1; --ink: #0d47a1; --muted: #546e7a; --line: #bbdefb; }
         * { box-sizing: border-box; }
-        body { min-height: 100vh; margin: 0; background: #e3f2fd; color: #263238; font-family: 'Plus Jakarta Sans', sans-serif; }
+        body { min-height: 100vh; margin: 0; background: #e3f2fd; color: #263238; font-family: 'Nunito', 'Segoe UI', Arial, sans-serif; }
         .login-page { display: grid; min-height: 100vh; grid-template-columns: minmax(0, 1.1fr) minmax(360px, .9fr); }
         .login-intro { display: flex; flex-direction: column; justify-content: space-between; padding: clamp(32px, 6vw, 88px); background: #0d47a1; color: #fff; }
         .brand { display: inline-flex; align-items: center; gap: 11px; color: #fff; font-size: 17px; font-weight: 800; letter-spacing: 0; text-decoration: none; }
