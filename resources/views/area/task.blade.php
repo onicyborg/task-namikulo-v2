@@ -6,11 +6,11 @@
     <div class="mb-4">
         <div class="d-flex align-items-center justify-content-between flex-wrap" style="gap: 1rem;">
             <div>
-                <h2 style="font-size: 1.5rem; font-weight: 800; color: var(--text-primary); margin: 0; line-height: 1.2;">Data Tasking</h2>
-                <p style="font-size: 0.875rem; color: var(--text-secondary); margin: 0.25rem 0 0;">Kelola semua task dan pekerja dengan mudah</p>
+                        <h2 style="font-size: 1.5rem; font-weight: 800; color: var(--text-primary); margin: 0; line-height: 1.2;">{{ $taskType === 'general' ? 'Data Tasking' : ($taskType === 'metopen' ? 'Data Task Metopen' : 'Data Artikel Ilmiah') }}</h2>
+                        <p style="font-size: 0.875rem; color: var(--text-secondary); margin: 0.25rem 0 0;">{{ $taskType === 'general' ? 'Kelola semua task dan pekerja dengan mudah' : 'Kelola task dan informasi akademik dengan mudah' }}</p>
             </div>
             <div class="card-header-action">
-                @if (Auth::user()->role == 'Admin')
+                @if (Auth::user()->role == 'Admin' && $taskType === 'general')
                     <button class="btn btn-primary" data-toggle="modal" data-target="#modal_add">
                         <i data-feather="plus" style="width: 16px; height: 16px;"></i> Tambah
                     </button>
@@ -70,6 +70,7 @@
                         <th>Kode</th>
                         <th>Customer</th>
                         @if (Auth::user()->role == 'Admin')<th>Worker</th>@endif
+                        @if ($taskType !== 'general')<th>Prodi</th><th>Judul</th><th>Progress</th>@endif
                         <th>Deskripsi</th>
                         <th>Tanggal Order</th>
                         <th>Deadline</th>
@@ -105,7 +106,7 @@
                         </div>
                     </div>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <i data-feather="x" style="width: 20px; height: 20px;"></i>
+                        <span class="modal-close-mark" aria-hidden="true">&times;</span>
                     </button>
                 </div>
                 <div class="modal-body">
@@ -120,6 +121,16 @@
                             </div>
                             <div class="col-lg-6">
                                 <div class="form-group">
+                                    <label>Kategori <span class="text-danger">*</span></label>
+                                    <select name="category_id" id="category_id_add" class="form-control" required>
+                                        <option value="">Pilih kategori</option>
+                                        @foreach ($categories as $category)<option value="{{ $category->id }}" data-type="{{ $category->tipe }}">{{ $category->nama }}</option>@endforeach
+                                    </select>
+                                    <div id="error_category_id_add" class="invalid-feedback"></div>
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <div class="form-group">
                                     <label>Worker</label>
                                     <select name="worker_id" id="worker_id_add" class="form-control"><option></option></select>
                                     <div id="error_worker_id_add" class="invalid-feedback"></div>
@@ -130,6 +141,14 @@
                             <label>Task Description</label>
                             <textarea name="task" id="task_add" class="form-control" rows="3"></textarea>
                             <div id="error_task_add" class="invalid-feedback"></div>
+                        </div>
+                        <div class="academic-fields academic-fields-add d-none">
+                            <div class="row">
+                                <div class="col-lg-6"><div class="form-group"><label>Program Studi <span class="text-danger">*</span></label><input name="prodi" id="prodi_add" class="form-control"><div id="error_prodi_add" class="invalid-feedback"></div></div></div>
+                                <div class="col-lg-6 academic-continuation-add"><div class="form-group"><label class="d-block">Lanjutan dari Metopen</label><label class="custom-switch mt-2"><input type="checkbox" name="is_lanjutan_metopen" value="1" class="custom-switch-input"><span class="custom-switch-indicator"></span><span class="custom-switch-description">Ya</span></label></div></div>
+                            </div>
+                            <div class="form-group"><label>Judul <span class="text-danger">*</span></label><textarea name="judul" id="judul_add" class="form-control" rows="2"></textarea><div id="error_judul_add" class="invalid-feedback"></div></div>
+                            <div class="form-group"><label>Keterangan</label><textarea name="keterangan" id="keterangan_add" class="form-control" rows="2"></textarea></div>
                         </div>
                         <div class="row">
                             <div class="col-lg-6">
@@ -215,7 +234,7 @@
                         </div>
                     </div>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <i data-feather="x" style="width: 20px; height: 20px;"></i>
+                        <span class="modal-close-mark" aria-hidden="true">&times;</span>
                     </button>
                 </div>
                 <div class="modal-body">
@@ -236,11 +255,29 @@
                                     <div id="error_worker_id_edit" class="invalid-feedback"></div>
                                 </div>
                             </div>
+                            <div class="col-lg-6">
+                                <div class="form-group">
+                                    <label>Kategori <span class="text-danger">*</span></label>
+                                    <select name="category_id" id="category_id_edit" class="form-control" required>
+                                        <option value="">Pilih kategori</option>
+                                        @foreach ($categories as $category)<option value="{{ $category->id }}" data-type="{{ $category->tipe }}">{{ $category->nama }}</option>@endforeach
+                                    </select>
+                                    <div id="error_category_id_edit" class="invalid-feedback"></div>
+                                </div>
+                            </div>
                         </div>
                         <div class="form-group">
                             <label>Task Description</label>
                             <textarea name="task" id="task_edit" class="form-control" rows="3"></textarea>
                             <div id="error_task_edit" class="invalid-feedback"></div>
+                        </div>
+                        <div class="academic-fields academic-fields-edit d-none">
+                            <div class="row">
+                                <div class="col-lg-6"><div class="form-group"><label>Program Studi <span class="text-danger">*</span></label><input name="prodi" id="prodi_edit" class="form-control"><div id="error_prodi_edit" class="invalid-feedback"></div></div></div>
+                                <div class="col-lg-6 academic-continuation-edit"><div class="form-group"><label class="d-block">Lanjutan dari Metopen</label><label class="custom-switch mt-2"><input type="checkbox" name="is_lanjutan_metopen" value="1" class="custom-switch-input"><span class="custom-switch-indicator"></span><span class="custom-switch-description">Ya</span></label></div></div>
+                            </div>
+                            <div class="form-group"><label>Judul <span class="text-danger">*</span></label><textarea name="judul" id="judul_edit" class="form-control" rows="2"></textarea><div id="error_judul_edit" class="invalid-feedback"></div></div>
+                            <div class="form-group"><label>Keterangan</label><textarea name="keterangan" id="keterangan_edit" class="form-control" rows="2"></textarea></div>
                         </div>
                         <div class="row">
                             <div class="col-lg-6">
@@ -324,7 +361,7 @@
                         </div>
                     </div>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <i data-feather="x" style="width: 20px; height: 20px;"></i>
+                        <span class="modal-close-mark" aria-hidden="true">&times;</span>
                     </button>
                 </div>
                 <div class="modal-body">
@@ -367,7 +404,7 @@
                         </div>
                     </div>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <i data-feather="x" style="width: 20px; height: 20px;"></i>
+                        <span class="modal-close-mark" aria-hidden="true">&times;</span>
                     </button>
                 </div>
                 <div class="modal-body">
@@ -396,8 +433,11 @@
     <script>
         $(document).ready(function() {
             $('#pay_status_filter, #task_status_filter').select2({width: '100%'});
-            $('#task_status_add, #pay_status_add, #task_status_edit_status').select2({width: '100%', placeholder: 'Pilih'});
-            $('#task_status_edit, #pay_status_edit').select2({width: '100%', placeholder: 'Pilih'});
+            $('#task_status_add, #pay_status_add').select2({width: '100%', placeholder: 'Pilih', dropdownParent: $('#modal_add')});
+            $('#task_status_edit_status').select2({width: '100%', placeholder: 'Pilih', dropdownParent: $('#modal_edit_status')});
+            $('#task_status_edit, #pay_status_edit').select2({width: '100%', placeholder: 'Pilih', dropdownParent: $('#modal_edit')});
+            $('#category_id_add').select2({width: '100%', placeholder: 'Pilih kategori', dropdownParent: $('#modal_add')});
+            $('#category_id_edit').select2({width: '100%', placeholder: 'Pilih kategori', dropdownParent: $('#modal_edit')});
             $('#client_id_add').select2({width: '100%', placeholder: 'Pilih', ajax: {url: '{{ url('client/search') }}', dataType: 'json', delay: 250, processResults: function(d) { return { results: d }; }, cache: true}, dropdownParent: $('#modal_add')});
             $('#worker_id_add').select2({width: '100%', placeholder: 'Pilih', ajax: {url: '{{ url('worker/search') }}', dataType: 'json', delay: 250, processResults: function(d) { return { results: d }; }, cache: true}, dropdownParent: $('#modal_add')});
             $('#client_id_edit').select2({width: '100%', ajax: {url: '{{ url('client/search') }}', dataType: 'json', delay: 250, processResults: function(d) { return { results: d }; }, cache: true}, dropdownParent: $('#modal_edit')});
@@ -405,11 +445,16 @@
             var orderAdd = document.getElementById("order_add"), deadlineAdd = document.getElementById("deadline_add");
             if(orderAdd && deadlineAdd){ deadlineAdd.min = orderAdd.value; orderAdd.addEventListener("change", function(){ deadlineAdd.min = orderAdd.value; }); }
 
+            $('#category_id_add, #category_id_edit').on('change', function () { toggleAcademicFields(this.id.indexOf('_add') > -1 ? 'add' : 'edit'); });
+            toggleAcademicFields('add');
+            toggleAcademicFields('edit');
+
             // Initialize feather icons for modals
             feather.replace();
         });
 
-        var url_datatable = '{{ url('task/list') }}?tanggal_mulai_filter=' + $("#tanggal_mulai_filter").val() + '&tanggal_akhir_filter=' + $("#tanggal_akhir_filter").val() + '&task_status_filter=' + $("#task_status_filter").val() + '&pay_status_filter=' + $("#pay_status_filter").val();
+        var taskType = @json($taskType);
+        var url_datatable = '{{ url('task/list') }}?tipe=' + encodeURIComponent(taskType) + '&tanggal_mulai_filter=' + $("#tanggal_mulai_filter").val() + '&tanggal_akhir_filter=' + $("#tanggal_akhir_filter").val() + '&task_status_filter=' + $("#task_status_filter").val() + '&pay_status_filter=' + $("#pay_status_filter").val();
         @if (Auth::user()->role == 'Worker') url_datatable += '&worker_id_filter={{ Auth::user()->id }}'; @endif
 
         var datatable = $("#table-1").DataTable({
@@ -422,6 +467,11 @@
                 {data: 'kode_task', name: 'kode_task'},
                 {data: 'customer', name: 'client.customer'},
                 @if (Auth::user()->role == 'Admin') {data: 'fullname', name: 'users.fullname'}, @endif
+                @if ($taskType !== 'general')
+                    {data: 'prodi', name: 'task_academic.prodi', defaultContent: '-'},
+                    {data: 'judul', name: 'task_academic.judul', defaultContent: '-', render: function(d) { return d ? $('<div>').text(d).html() : '-'; }},
+                    {data: null, orderable: false, searchable: false, render: function(d) { var n = [d.tugas_1,d.tugas_2,d.tugas_3,d.tugas_4].filter(Boolean).length; return '<span class="badge badge-primary">' + n + '/4</span>'; }},
+                @endif
                 {data: 'task', name: 'task'},
                 {"searchable": false, data: 'order', name: 'order'},
                 {"searchable": false, data: 'deadline', name: 'deadline'},
@@ -465,13 +515,21 @@
         $("#search_filter").on("keyup", function() { datatable.search($(this).val()).draw(); });
 
         function reloadDataTable() {
-            var newUrl = '{{ url('task/list') }}?tanggal_mulai_filter=' + $("#tanggal_mulai_filter").val() + '&tanggal_akhir_filter=' + $("#tanggal_akhir_filter").val() + '&task_status_filter=' + $("#task_status_filter").val() + '&pay_status_filter=' + $("#pay_status_filter").val();
+            var newUrl = '{{ url('task/list') }}?tipe=' + encodeURIComponent(taskType) + '&tanggal_mulai_filter=' + $("#tanggal_mulai_filter").val() + '&tanggal_akhir_filter=' + $("#tanggal_akhir_filter").val() + '&task_status_filter=' + $("#task_status_filter").val() + '&pay_status_filter=' + $("#pay_status_filter").val();
             @if (Auth::user()->role == 'Worker') newUrl += '&worker_id_filter={{ Auth::user()->id }}'; @endif
             datatable.ajax.url(newUrl).load();
         }
 
         function exportTask() {
             window.location.href = "{{ url('task/export') }}?search_filter=" + $("#search_filter").val() + '&tanggal_mulai_filter=' + $("#tanggal_mulai_filter").val() + '&tanggal_akhir_filter=' + $("#tanggal_akhir_filter").val() + '&task_status_filter=' + $("#task_status_filter").val() + '&pay_status_filter=' + $("#pay_status_filter").val();
+        }
+
+        function toggleAcademicFields(mode) {
+            var value = $('#category_id_' + mode + ' option:selected').data('type');
+            var academic = value === 'metopen' || value === 'artikel_ilmiah';
+            $('.academic-fields-' + mode).toggleClass('d-none', !academic);
+            $('.academic-continuation-' + mode).toggleClass('d-none', value !== 'artikel_ilmiah');
+            $('#prodi_' + mode + ', #judul_' + mode).prop('required', academic);
         }
 
         $("#form_add").submit(function(e) {
@@ -498,7 +556,14 @@
                         $("#id_edit").val(data.id);
                         $("#client_id_edit").select2("trigger", "select", {data: {id: data.client_id, text: data.customer}});
                         $("#worker_id_edit").select2("trigger", "select", {data: {id: data.worker_id, text: data.worker}});
+                        $("#category_id_edit").val(data.category_id).trigger('change');
                         $("#task_edit").val(data.task);
+                        if (data.academic) {
+                            $("#prodi_edit").val(data.academic.prodi);
+                            $("#judul_edit").val(data.academic.judul);
+                            $("#keterangan_edit").val(data.academic.keterangan);
+                            $("#modal_edit input[name='is_lanjutan_metopen']").prop('checked', !!data.academic.is_lanjutan_metopen);
+                        }
                         $("#order_edit").val(data.order);
                         $("#deadline_edit").val(data.deadline);
                         $("#price_order_edit").val(data.price_order);

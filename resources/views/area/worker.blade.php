@@ -55,7 +55,7 @@
                         Tambah Worker
                     </h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <i data-feather="x" style="width: 18px; height: 18px;"></i>
+                        <span class="modal-close-mark" aria-hidden="true">&times;</span>
                     </button>
                 </div>
                 <div class="modal-body">
@@ -133,7 +133,7 @@
                         Edit Worker
                     </h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <i data-feather="x" style="width: 18px; height: 18px;"></i>
+                        <span class="modal-close-mark" aria-hidden="true">&times;</span>
                     </button>
                 </div>
                 <div class="modal-body">
@@ -207,7 +207,7 @@
 @endsection
 @push('js')
     <script>
-        $(document).ready(function() { $('#jk_add').select2({width: '100%', placeholder: 'Pilih'}); $('#jk_edit').select2({width: '100%', placeholder: 'Pilih'}); });
+        $(document).ready(function() { $('#jk_add').select2({width: '100%', placeholder: 'Pilih', dropdownParent: $('#modal_add')}); $('#jk_edit').select2({width: '100%', placeholder: 'Pilih', dropdownParent: $('#modal_edit')}); });
 
         var datatable = $("#table-1").DataTable({
             "dom": "<'dt--top-section'>" + "<''tr>" + "<'dt--bottom-section d-sm-flex justify-content-sm-between text-center'<'dt--length-info d-flex justify-content-center align-middle 'l<'dt--pages-count ml-1'i>><'dt--pagination mt-sm-0 mt-3'p>>",

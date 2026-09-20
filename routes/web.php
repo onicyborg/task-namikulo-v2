@@ -4,6 +4,7 @@ use App\Http\Controllers\Area\CalendarController;
 use App\Http\Controllers\Area\ClientController;
 use App\Http\Controllers\Area\DashboardController;
 use App\Http\Controllers\Area\TaskController;
+use App\Http\Controllers\Area\TaskCategoryController;
 use App\Http\Controllers\Area\WorkerController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\Area\ProfilController;
@@ -42,6 +43,8 @@ Route::group(['middleware' => ['auth', 'preventBackHistory']], function () {
         Route::post('/worker/delete', [WorkerController::class, 'delete']);
 
         Route::get('/task', [TaskController::class, 'index']);
+        Route::get('/task/metopen', [TaskController::class, 'metopen']);
+        Route::get('/task/artikel-ilmiah', [TaskController::class, 'artikelIlmiah']);
         Route::get('/task/get-by-date', [TaskController::class, 'getByDate']);
         Route::get('/task/export', [TaskController::class, 'export']);
         Route::get('/task/config', [TaskController::class, 'config']);
@@ -52,10 +55,18 @@ Route::group(['middleware' => ['auth', 'preventBackHistory']], function () {
         Route::post('/task/edit-pay', [TaskController::class, 'editPay']);
         Route::post('/task/edit-status', [TaskController::class, 'editStatus']);
         Route::post('/task/delete', [TaskController::class, 'delete']);
+        Route::patch('/task/{id}/checklist', [TaskController::class, 'updateChecklist']);
 
         Route::post('/task/add-file', [TaskController::class, 'addFile']);
         Route::post('/task/edit-file', [TaskController::class, 'editFile']);
         Route::post('/task/delete-file', [TaskController::class, 'deleteFile']);
+
+        Route::middleware('roleCheck:Admin')->group(function () {
+            Route::get('/task-category', [TaskCategoryController::class, 'index']);
+            Route::post('/task-category/add', [TaskCategoryController::class, 'add']);
+            Route::post('/task-category/edit', [TaskCategoryController::class, 'edit']);
+            Route::post('/task-category/delete', [TaskCategoryController::class, 'delete']);
+        });
 
         Route::get('/calendar', [CalendarController::class, 'index']);
 

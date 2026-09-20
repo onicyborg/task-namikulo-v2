@@ -2,7 +2,7 @@
 @push('head')
 @endpush
 @section('content')
-    <div class="detail-layout">
+    <div class="detail-layout{{ $task->academic ? ' has-academic' : '' }}">
         <div class="detail-left">
             <div class="detail-info-card">
                 <div class="detail-info-header">
@@ -69,6 +69,28 @@
                     </div>
                 </div>
             </div>
+            @if ($task->academic)
+                <div class="detail-info-card mt-3">
+                    <div class="detail-info-header"><i data-feather="book-open"></i><h4>Informasi Akademik</h4></div>
+                    <div class="detail-info-body">
+                        <div class="info-list">
+                            <div class="info-row"><span class="info-label">Kategori</span><span class="info-value">{{ $task->category->nama ?? '-' }}</span></div>
+                            <div class="info-row"><span class="info-label">Program Studi</span><span class="info-value">{{ $task->academic->prodi }}</span></div>
+                            <div class="info-row"><span class="info-label">Judul</span><span class="info-value">{{ $task->academic->judul }}</span></div>
+                            @if ($task->category && $task->category->tipe === 'artikel_ilmiah')<div class="info-row"><span class="info-label">Lanjutan Metopen</span><span class="info-value">{{ $task->academic->is_lanjutan_metopen ? 'Ya' : 'Tidak' }}</span></div>@endif
+                            @if ($task->academic->keterangan)<div class="info-row"><span class="info-label">Keterangan</span><span class="info-value">{{ $task->academic->keterangan }}</span></div>@endif
+                        </div>
+                        <hr>
+                        <div class="d-flex align-items-center justify-content-between mb-2"><strong>Checklist Pekerjaan</strong><span class="badge badge-primary" id="academic_progress">{{ $task->academic->progress_count }}/4</span></div>
+                        <form id="checklist_form">
+                            @for ($i = 1; $i <= 4; $i++)
+                                <label class="d-flex align-items-center mb-2"><input type="checkbox" class="mr-2 academic-check" name="tugas_{{ $i }}" value="1" {{ $task->academic->{'tugas_'.$i} ? 'checked' : '' }}> Tugas {{ $i }}</label>
+                            @endfor
+                            <button class="btn btn-sm btn-primary mt-2" type="submit"><i data-feather="save"></i> Simpan Checklist</button>
+                        </form>
+                    </div>
+                </div>
+            @endif
         </div>
 
         <div class="detail-right">
@@ -125,7 +147,7 @@
             <div class="modal-header">
                     <h5 class="modal-title">Tambah File</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <i data-feather="x" style="width: 20px; height: 20px;"></i>
+                        <span class="modal-close-mark" aria-hidden="true">&times;</span>
                     </button>
                 </div>
             <div class="modal-body">
@@ -143,7 +165,7 @@
             <div class="modal-header">
                     <h5 class="modal-title">Edit File</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <i data-feather="x" style="width: 20px; height: 20px;"></i>
+                        <span class="modal-close-mark" aria-hidden="true">&times;</span>
                     </button>
                 </div>
             <div class="modal-body">
@@ -161,6 +183,10 @@
     <script>
         var datatable = $("#table").DataTable({"dom": "<'dt--top-section'>" + "<''tr>" + "<'dt--bottom-section d-sm-flex justify-content-sm-between text-center'<'dt--length-info d-flex justify-content-center align-middle 'l<'dt--pages-count ml-1'i>><'dt--pagination mt-sm-0 mt-3'p>>", "oLanguage": {"sLengthMenu": "_MENU_"}});
         $("#search_filter").on("keyup", function() { datatable.search($(this).val()).draw(); });
+        $("#checklist_form").on("submit", function(e) {
+            e.preventDefault();
+            $.ajax({url: "{{ url('task/'.$task->id.'/checklist') }}", type: 'PATCH', data: $(this).serialize(), headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')}, success: function(response) { if (response.status == 1) { var count = $('.academic-check:checked').length; $('#academic_progress').text(count + '/4'); Swal.fire({icon:'success', title:'Berhasil', text:response.msg, timer:900, showConfirmButton:false}); } }, error: errorAjaxResponse});
+        });
 
         $("#form_add").submit(function(e) {
             $("#btn_add").prop("disabled", true);

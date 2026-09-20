@@ -175,6 +175,8 @@ table.dataTable thead .sorting_desc::after { color: var(--nm-primary) !important
 
 .detail-layout { display: grid; grid-template-columns: minmax(260px, .85fr) minmax(0, 1.6fr); gap: 20px; }
 .detail-left, .detail-right { min-width: 0; }
+.detail-right .detail-info-card { height: 100%; display: flex; flex-direction: column; }
+.detail-right .detail-info-body { flex: 1 1 auto; }
 .detail-info-header { justify-content: flex-start; }
 .detail-info-header > svg { width: 20px; color: var(--nm-primary); }
 .detail-info-header .btn { margin-left: auto; }
@@ -189,6 +191,16 @@ table.dataTable thead .sorting_desc::after { color: var(--nm-primary) !important
 .info-row:last-child { border-bottom: 0; }
 .info-label { color: var(--nm-muted); font-size: 12px; font-weight: 700; }
 .info-value { min-width: 0; color: var(--nm-ink); font-weight: 600; overflow-wrap: anywhere; }
+
+@media (min-width: 992px) {
+  .detail-layout.has-academic .detail-left { display: contents; }
+  .detail-layout.has-academic .detail-left > .detail-info-card:first-child { grid-column: 1 / -1; margin-bottom: 0; }
+  .detail-layout.has-academic .detail-left > .detail-info-card:nth-child(2) { grid-column: 1; height: 100%; margin-top: 0 !important; margin-bottom: 0 !important; }
+  .detail-layout.has-academic .detail-right { grid-column: 2; grid-row: 2; }
+  .detail-layout.has-academic .detail-right .detail-info-card { height: 100%; margin-bottom: 0 !important; }
+  .detail-layout.has-academic .detail-left > .detail-info-card:first-child .info-list { grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 32px; }
+  .detail-layout.has-academic .detail-left > .detail-info-card:first-child .info-row { grid-template-columns: minmax(110px, .35fr) 1fr; }
+}
 
 .profile-layout { max-width: 700px; }
 .profile-card { overflow: visible; }
@@ -224,6 +236,16 @@ table.dataTable thead .sorting_desc::after { color: var(--nm-primary) !important
 .modal-header .close:hover { background: #f2f4f7; color: var(--nm-ink); }
 .modal-body { padding: 22px; }
 .modal-footer { gap: 8px; padding: 15px 22px; border-top: 1px solid var(--nm-line); }
+
+/* Keep long forms inside the modal body instead of allowing focus/Select2
+   interactions to move the whole page back to the top. */
+.modal { overflow-y: auto !important; -webkit-overflow-scrolling: touch; }
+.modal-dialog { max-height: calc(100vh - 2rem); }
+.modal-content { max-height: calc(100vh - 2rem); display: flex; }
+.modal-body { overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; }
+@media (max-width: 576px) {
+  .modal-dialog, .modal-content { max-height: calc(100vh - 1rem); }
+}
 
 /* SweetAlert2 actions are shared by every area page. */
 .swal2-popup { border-radius: 10px; font-family: inherit; }
@@ -274,6 +296,8 @@ body.dark .swal2-actions .swal2-delete-cancel:hover { background: #31363f !impor
   body.sidebar-open .sidebar-backdrop { position: fixed; inset: 0; z-index: 1030; display: block; background: rgba(16,24,40,.44); }
   .app-topbar { padding: 0 20px; }
   .detail-layout { grid-template-columns: 1fr; }
+  .detail-left { display: block; }
+  .detail-right .detail-info-card { height: auto; }
   .stats-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 @media (max-width: 767.98px) {
@@ -1247,3 +1271,20 @@ body.dark .client-detail-page .filter-bar {
 .brand-link, .brand-link:hover, .brand-link:focus, .brand-link:active { text-decoration: none !important; cursor: pointer; }
 body.light-sidebar .brand-link:hover, body.light-sidebar .brand-link:focus, body.light-sidebar .brand-link:active { color: #0d47a1 !important; }
 .sidebar-link, .sidebar-link:hover, .sidebar-link:focus, .sidebar-link:active { text-decoration: none !important; cursor: pointer; }
+.modal-close-mark {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    font-family: Arial, sans-serif;
+    font-size: 28px;
+    font-weight: 400;
+    line-height: 20px;
+    color: #667085;
+}
+
+.modal .close:hover .modal-close-mark,
+.modal .close:focus .modal-close-mark {
+    color: var(--accent-primary, #6777ef);
+}

@@ -51,7 +51,7 @@
                         Tambah Client
                     </h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <i data-feather="x" style="width: 18px; height: 18px;"></i>
+                        <span class="modal-close-mark" aria-hidden="true">&times;</span>
                     </button>
                 </div>
                 <div class="modal-body">
@@ -101,7 +101,7 @@
                         Edit Client
                     </h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <i data-feather="x" style="width: 18px; height: 18px;"></i>
+                        <span class="modal-close-mark" aria-hidden="true">&times;</span>
                     </button>
                 </div>
                 <div class="modal-body">
@@ -146,8 +146,8 @@
 @push('js')
     <script>
         $(document).ready(function() {
-            $('#jk_add').select2({width: '100%', placeholder: 'Pilih'});
-            $('#jk_edit').select2({width: '100%', placeholder: 'Pilih'});
+            $('#jk_add').select2({width: '100%', placeholder: 'Pilih', dropdownParent: $('#modal_add')});
+            $('#jk_edit').select2({width: '100%', placeholder: 'Pilih', dropdownParent: $('#modal_edit')});
         });
 
         var datatable = $("#table-1").DataTable({

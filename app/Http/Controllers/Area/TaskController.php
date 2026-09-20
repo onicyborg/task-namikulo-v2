@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Area;
 use App\Exports\TaskExport;
 use App\Http\Controllers\Controller;
 use App\Models\Task;
+use App\Models\TaskCategory;
+use App\Models\TaskAcademic;
 use App\Models\TaskDetail;
 use Exception;
 use Illuminate\Http\Request;
@@ -15,20 +17,42 @@ use Yajra\DataTables\Facades\DataTables;
 
 class TaskController extends BaseController
 {
-    public function index()
+    public function index(Request $request, ?string $type = null)
     {
         $data = [];
         $this->loadThemePreferences($data);
-        $data['title'] = 'Data Task';
+        $type = $type ?: $request->get('tipe', 'general');
+        $allowedTypes = ['general', 'metopen', 'artikel_ilmiah'];
+        $data['taskType'] = in_array($type, $allowedTypes, true) ? $type : 'general';
+        $data['title'] = $data['taskType'] === 'general' ? 'Data Task General' : ($data['taskType'] === 'metopen' ? 'Data Task Metopen' : 'Data Artikel Ilmiah');
         $data['page'] = 'task';
+        $data['categories'] = TaskCategory::orderBy('nama')->get();
         return view('area.task', $data);
+    }
+
+    public function metopen(Request $request)
+    {
+        return $this->index($request, 'metopen');
+    }
+
+    public function artikelIlmiah(Request $request)
+    {
+        return $this->index($request, 'artikel_ilmiah');
     }
 
     public function list(Request $request)
     {
-        $task = Task::select('task.id', 'users.fullname', 'client.customer', 'kode_task', 'task', 'order', 'deadline', 'price_order', 'pay_worker', 'margin', 'task_status', 'pay_status')
+        $task = Task::select('task.id', 'task.category_id', 'task_academic.prodi', 'task_academic.judul', 'task_academic.tugas_1', 'task_academic.tugas_2', 'task_academic.tugas_3', 'task_academic.tugas_4', 'task_category.nama as category_name', 'task_category.tipe as category_type', 'users.fullname', 'client.customer', 'kode_task', 'task', 'order', 'deadline', 'price_order', 'pay_worker', 'margin', 'task_status', 'pay_status')
             ->leftJoin('users', 'task.worker_id', '=', 'users.id')
-            ->leftJoin('client', 'task.client_id', '=', 'client.id');
+            ->leftJoin('client', 'task.client_id', '=', 'client.id')
+            ->leftJoin('task_category', 'task.category_id', '=', 'task_category.id')
+            ->leftJoin('task_academic', 'task.id', '=', 'task_academic.task_id');
+
+        // General tetap menampilkan seluruh task legacy, termasuk task yang
+        // category_id-nya masih NULL. Academic pages memakai filter tipe.
+        if ($request->filled('tipe') && $request->input('tipe') !== 'general') {
+            $task->where('task_category.tipe', $request->input('tipe'));
+        }
 
         if (!$request->has('order')) {
             $task->orderBy('order', 'desc')
@@ -74,9 +98,10 @@ class TaskController extends BaseController
 
     public function add(Request $request)
     {
-        request()->validate([
+        $validated = $request->validate([
             'client_id' => 'required',
             'worker_id' => 'required',
+            'category_id' => 'required|exists:task_category,id',
             'task' => 'required',
             'price_order' => 'required',
             'pay_worker' => 'required',
@@ -86,16 +111,20 @@ class TaskController extends BaseController
             'pay_status' => 'required',
         ]);
 
+        $category = TaskCategory::findOrFail($validated['category_id']);
+        $this->validateAcademicFields($request, $category);
+
         $count = Task::withTrashed()->whereDate('created_at', date('Y-m-d'))->count();
         $kode = $count + 1;
 
-        $data = $request->all();
+        $data = $request->only(['client_id', 'worker_id', 'category_id', 'task', 'order', 'deadline', 'price_order', 'pay_worker', 'task_status', 'pay_status']);
         $data['kode_task'] = 'TS' . date('Ymd') . sprintf("%03d", $kode);
         $data['margin'] = $request->price_order - $request->pay_worker;
 
         try {
             DB::beginTransaction();
-            Task::create($data);
+            $task = Task::create($data);
+            $this->syncAcademic($task, $category, $request);
             DB::commit();
 
             $response['status'] = '1';
@@ -113,9 +142,11 @@ class TaskController extends BaseController
 
     public function edit(Request $request)
     {
-        request()->validate([
+        $validated = $request->validate([
+            'id' => 'required|exists:task,id',
             'client_id' => 'required',
             'worker_id' => 'required',
+            'category_id' => 'required|exists:task_category,id',
             'task' => 'required',
             'price_order' => 'required',
             'pay_worker' => 'required',
@@ -125,12 +156,17 @@ class TaskController extends BaseController
             'pay_status' => 'required',
         ]);
 
-        $data = $request->all();
+        $category = TaskCategory::findOrFail($validated['category_id']);
+        $this->validateAcademicFields($request, $category);
+
+        $data = $request->only(['client_id', 'worker_id', 'category_id', 'task', 'order', 'deadline', 'price_order', 'pay_worker', 'task_status', 'pay_status']);
         $data['margin'] = $request->price_order - $request->pay_worker;
 
         try {
             DB::beginTransaction();
-            Task::where('id', $request->id)->update($data);
+            $task = Task::findOrFail($request->id);
+            $task->update($data);
+            $this->syncAcademic($task, $category, $request);
             DB::commit();
 
             $response['status'] = '1';
@@ -158,6 +194,7 @@ class TaskController extends BaseController
                 $response['msg'] = "Data ditemukan";
                 $task->order_indo = hariTglIndo($task->order);
                 $task->deadline_indo = hariTglIndo($task->deadline);
+                $task->load(['category', 'academic']);
                 $response['task'] = $task;
             } else {
                 $response['status'] = 0;
@@ -171,6 +208,7 @@ class TaskController extends BaseController
                 $data['title'] = 'Data Task';
                 $data['page'] = 'task';
                 $data['task'] = $task;
+                $task->load(['category', 'academic']);
                 $data['detail'] = TaskDetail::where('kode_task', $task->kode_task)->get();
 
                 return view('area.task_detail', $data);
@@ -180,11 +218,64 @@ class TaskController extends BaseController
         }
     }
 
+    private function validateAcademicFields(Request $request, TaskCategory $category): void
+    {
+        if (in_array($category->tipe, ['metopen', 'artikel_ilmiah'], true)) {
+            validator($request->all(), [
+                'prodi' => 'required|string|max:255',
+                'judul' => 'required|string',
+                'keterangan' => 'nullable|string',
+                'is_lanjutan_metopen' => 'boolean',
+            ])->validate();
+        }
+    }
+
+    private function syncAcademic(Task $task, TaskCategory $category, Request $request): void
+    {
+        if (!in_array($category->tipe, ['metopen', 'artikel_ilmiah'], true)) {
+            $task->academic()->delete();
+            return;
+        }
+
+        $task->academic()->withTrashed()->updateOrCreate(
+            ['task_id' => $task->id],
+            [
+                'prodi' => $request->input('prodi'),
+                'judul' => $request->input('judul'),
+                'keterangan' => $request->input('keterangan'),
+                'is_lanjutan_metopen' => $category->tipe === 'artikel_ilmiah' && $request->boolean('is_lanjutan_metopen'),
+                'deleted_at' => null,
+            ]
+        );
+    }
+
+    public function updateChecklist(Request $request, $id)
+    {
+        $task = Task::with('academic')->findOrFail($id);
+        if (Auth::user()->role !== 'Admin' && (int) $task->worker_id !== (int) Auth::id()) {
+            abort(403);
+        }
+        if (!$task->academic) {
+            return response()->json(['status' => 0, 'msg' => 'Task ini belum memiliki data akademik'], 422);
+        }
+
+        $values = $request->validate([
+            'tugas_1' => 'nullable|boolean', 'tugas_2' => 'nullable|boolean',
+            'tugas_3' => 'nullable|boolean', 'tugas_4' => 'nullable|boolean',
+        ]);
+        foreach (['tugas_1', 'tugas_2', 'tugas_3', 'tugas_4'] as $field) {
+            $values[$field] = $request->boolean($field);
+        }
+        $task->academic->update($values);
+
+        return response()->json(['status' => 1, 'msg' => 'Checklist berhasil diperbarui']);
+    }
+
     public function delete(Request $request)
     {
         try {
             DB::beginTransaction();
-            Task::where('id', $request->id)->delete();
+            Task::findOrFail($request->id)->delete();
             DB::commit();
 
             $response['status'] = 1;

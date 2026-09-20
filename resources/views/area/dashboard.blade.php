@@ -2,74 +2,36 @@
 @push('head')
 @endpush
 @section('content')
-    <!-- Stat Cards -->
-    <div class="row mb-4">
-        <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12 mb-3">
-            <div class="stat-card" style="--accent-rgb: 59, 130, 246;">
-                <div style="display: flex; align-items: flex-start; justify-content: space-between;">
-                    <div>
-                        <div class="stat-label">Total Task</div>
-                        <div class="stat-value">{{ $statistik['waiting'] + $statistik['progress'] + $statistik['done'] }}</div>
+    <!-- Stat Cards: mengikuti card statistic-4 bawaan Otika -->
+    <div class="row">
+        @foreach ([
+            ['label' => 'Total Task', 'value' => $statistik['waiting'] + $statistik['progress'] + $statistik['done'], 'image' => '1.png'],
+            ['label' => 'Total Waiting', 'value' => $statistik['waiting'], 'image' => '2.png'],
+            ['label' => 'Total Done', 'value' => $statistik['done'], 'image' => '3.png'],
+            ['label' => Auth::user()->role == 'Admin' ? 'Total Margin' : 'Total Revenue (Order', 'value' => Auth::user()->role == 'Admin' ? rupiah($statistik['margin'], true) : rupiah($statistik['pay_worker'], true), 'image' => '4.png'],
+        ] as $statCard)
+            <div class="col-xl-3 col-lg-6 col-md-6 col-sm-6 col-xs-12">
+                <div class="card">
+                    <div class="card-statistic-4">
+                        <div class="align-items-center justify-content-between">
+                            <div class="row">
+                                <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6 pr-0 pt-3">
+                                    <div class="card-content">
+                                        <h5 class="font-15">{{ $statCard['label'] }}</h5>
+                                        <h2 class="mb-3 font-18">{{ $statCard['value'] }}</h2>
+                                    </div>
+                                </div>
+                                <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6 pl-0">
+                                    <div class="banner-img">
+                                        <img src="https://otika.namikulo.com/assets/img/banner/{{ $statCard['image'] }}" alt="">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="stat-icon" style="background: rgba(59, 130, 246, 0.1); color: #3b82f6;">
-                        <i data-feather="layers"></i>
-                    </div>
-                </div>
-                <div class="stat-breakdown" aria-label="Rincian status task">
-                    <span class="badge badge-warning">{{ $statistik['waiting'] }} Waiting</span>
-                    <span class="badge badge-primary">{{ $statistik['progress'] }} Progress</span>
-                    <span class="badge badge-success">{{ $statistik['done'] }} Done</span>
                 </div>
             </div>
-        </div>
-        <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12 mb-3">
-            <div class="stat-card" style="--accent-rgb: 245, 158, 11;">
-                <div style="display: flex; align-items: flex-start; justify-content: space-between;">
-                    <div>
-                        <div class="stat-label">Waiting</div>
-                        <div class="stat-value">{{ $statistik['waiting'] }}</div>
-                    </div>
-                    <div class="stat-icon" style="background: rgba(245, 158, 11, 0.1); color: #f59e0b;">
-                        <i data-feather="clock"></i>
-                    </div>
-                </div>
-                <div style="margin-top: 0.75rem;">
-                    <span style="font-size: 0.75rem; color: var(--text-secondary);">Task yang belum dikerjakan</span>
-                </div>
-            </div>
-        </div>
-        <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12 mb-3">
-            <div class="stat-card" style="--accent-rgb: 16, 185, 129;">
-                <div style="display: flex; align-items: flex-start; justify-content: space-between;">
-                    <div>
-                        <div class="stat-label">Done</div>
-                        <div class="stat-value">{{ $statistik['done'] }}</div>
-                    </div>
-                    <div class="stat-icon" style="background: rgba(16, 185, 129, 0.1); color: #10b981;">
-                        <i data-feather="check-circle"></i>
-                    </div>
-                </div>
-                <div style="margin-top: 0.75rem;">
-                    <span style="font-size: 0.75rem; color: var(--text-secondary);">Task yang sudah selesai</span>
-                </div>
-            </div>
-        </div>
-        <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12 mb-3">
-            <div class="stat-card" style="--accent-rgb: 99, 102, 241;">
-                <div style="display: flex; align-items: flex-start; justify-content: space-between;">
-                    <div>
-                        <div class="stat-label">{{ Auth::user()->role == 'Admin' ? 'Total Margin' : 'Total Revenue' }}</div>
-                        <div class="stat-value" style="font-size: 1.5rem;">{{ Auth::user()->role == 'Admin' ? rupiah($statistik['margin'], true) : rupiah($statistik['pay_worker'], true) }}</div>
-                    </div>
-                    <div class="stat-icon" style="background: rgba(99, 102, 241, 0.1); color: #6366f1;">
-                        <i data-feather="trending-up"></i>
-                    </div>
-                </div>
-                <div style="margin-top: 0.75rem;">
-                    <span style="font-size: 0.75rem; color: var(--text-secondary);">{{ Auth::user()->role == 'Admin' ? 'Keuntungan bersih' : 'Total pembayaran diterima' }}</span>
-                </div>
-            </div>
-        </div>
+        @endforeach
     </div>
 
     <!-- Chart & Stats Row -->

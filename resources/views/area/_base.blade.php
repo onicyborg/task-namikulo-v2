@@ -16,6 +16,16 @@
         $otikaMiniSidebar = (bool) ($miniSidebar ?? false);
         $otikaStickyHeader = (bool) ($stickyHeader ?? true);
     @endphp
+    @php
+        $isTaskContext = ($page ?? '') === 'task';
+        $activeTaskType = null;
+        if ($isTaskContext) {
+            $activeTaskType = $taskType ?? request()->query('tipe', 'general');
+            if (request()->is('task/metopen')) $activeTaskType = 'metopen';
+            if (request()->is('task/artikel-ilmiah')) $activeTaskType = 'artikel_ilmiah';
+            if (isset($task) && $task->category) $activeTaskType = $task->category->tipe;
+        }
+    @endphp
     {{-- Custom content helpers stay local; Otika framework assets use the deployed asset host. --}}
     <link rel="stylesheet" href="{{ asset('css/namikulo.css') }}?v={{ filemtime(public_path('css/namikulo.css')) }}">
     <link rel="stylesheet" href="{{ $otikaAssets }}/css/app.min.css">
@@ -77,11 +87,19 @@
                         <li class="menu-header">Main</li>
                         <li class="{{ ($page ?? '') === 'dashboard' ? 'active' : '' }}"><a href="{{ url('dashboard') }}" class="nav-link"><i data-feather="monitor"></i><span>Dashboard</span></a></li>
                         <li class="{{ ($page ?? '') === 'calendar' ? 'active' : '' }}"><a href="{{ url('calendar') }}" class="nav-link"><i data-feather="calendar"></i><span>Kalender</span></a></li>
-                        <li class="{{ ($page ?? '') === 'task' ? 'active' : '' }}"><a href="{{ url('task') }}" class="nav-link"><i data-feather="briefcase"></i><span>Task</span></a></li>
+                        <li class="dropdown {{ ($page ?? '') === 'task' ? 'active' : '' }}">
+                            <a href="#" class="menu-toggle nav-link has-dropdown"><i data-feather="briefcase"></i><span>Task</span></a>
+                            <ul class="dropdown-menu">
+                                <li class="{{ $activeTaskType === 'general' ? 'active' : '' }}"><a class="nav-link" href="{{ url('task') }}?tipe=general" @if ($activeTaskType === 'general') aria-current="page" @endif>General</a></li>
+                                <li class="{{ $activeTaskType === 'metopen' ? 'active' : '' }}"><a class="nav-link" href="{{ url('task/metopen') }}" @if ($activeTaskType === 'metopen') aria-current="page" @endif>Metopen</a></li>
+                                <li class="{{ $activeTaskType === 'artikel_ilmiah' ? 'active' : '' }}"><a class="nav-link" href="{{ url('task/artikel-ilmiah') }}" @if ($activeTaskType === 'artikel_ilmiah') aria-current="page" @endif>Artikel Ilmiah</a></li>
+                            </ul>
+                        </li>
                         @if (Auth::user()->role === 'Admin')
                             <li class="menu-header">Master</li>
                             <li class="{{ ($page ?? '') === 'client' ? 'active' : '' }}"><a href="{{ url('client') }}" class="nav-link"><i data-feather="command"></i><span>Client</span></a></li>
                             <li class="{{ ($page ?? '') === 'worker' ? 'active' : '' }}"><a href="{{ url('worker') }}" class="nav-link"><i data-feather="user"></i><span>Worker</span></a></li>
+                            <li class="{{ ($page ?? '') === 'task-category' ? 'active' : '' }}"><a href="{{ url('task-category') }}" class="nav-link"><i data-feather="tag"></i><span>Kategori Task</span></a></li>
                         @endif
                     </ul>
                 </aside>
