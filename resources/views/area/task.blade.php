@@ -70,7 +70,10 @@
                         <th>Kode</th>
                         <th>Customer</th>
                         @if (Auth::user()->role == 'Admin')<th>Worker</th>@endif
-                        @if ($taskType !== 'general')<th>Prodi</th><th>Judul</th><th>Progress</th>@endif
+                        @if ($taskType !== 'general')
+                            <th>Prodi</th>
+                            <th>Progress</th>
+                        @endif
                         <th>Deskripsi</th>
                         <th>Tanggal Order</th>
                         <th>Deadline</th>
@@ -469,7 +472,6 @@
                 @if (Auth::user()->role == 'Admin') {data: 'fullname', name: 'users.fullname'}, @endif
                 @if ($taskType !== 'general')
                     {data: 'prodi', name: 'task_academic.prodi', defaultContent: '-'},
-                    {data: 'judul', name: 'task_academic.judul', defaultContent: '-', render: function(d) { return d ? $('<div>').text(d).html() : '-'; }},
                     {data: null, orderable: false, searchable: false, render: function(d) { var n = [d.tugas_1,d.tugas_2,d.tugas_3,d.tugas_4].filter(Boolean).length; return '<span class="badge badge-primary">' + n + '/4</span>'; }},
                 @endif
                 {data: 'task', name: 'task'},
