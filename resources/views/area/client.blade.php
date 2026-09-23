@@ -63,7 +63,11 @@
                         </div>
                         <div class="form-group">
                             <label class="form-label">Handphone</label>
-                            <input type="text" class="form-control" name="handphone" id="handphone_add" placeholder="Nomor telepon">
+                            <div class="input-group">
+                                <div class="input-group-prepend" style="min-width: 175px;"><select name="handphone_country" id="handphone_country_add" class="form-control" aria-label="Kode negara">@foreach ($countries as $country)<option value="{{ $country['code'] }}" data-dial-code="{{ $country['dial_code'] }}" @selected($country['code'] === 'ID')>{{ $country['name'] }} ({{ $country['dial_code'] }})</option>@endforeach</select></div>
+                                <input type="text" class="form-control" name="handphone" id="handphone_add" inputmode="numeric" pattern="[0-9]*" placeholder="81398238734">
+                            </div>
+                            <small class="form-text text-muted">Pilih negara, lalu isi nomor lokal tanpa kode negara.</small>
                             <div id="error_handphone_add" class="invalid-feedback"></div>
                         </div>
                         <div class="form-group">
@@ -114,7 +118,11 @@
                         </div>
                         <div class="form-group">
                             <label class="form-label">Handphone</label>
-                            <input type="text" class="form-control" name="handphone" id="handphone_edit" placeholder="Nomor telepon">
+                            <div class="input-group">
+                                <div class="input-group-prepend" style="min-width: 175px;"><select name="handphone_country" id="handphone_country_edit" class="form-control" aria-label="Kode negara">@foreach ($countries as $country)<option value="{{ $country['code'] }}" data-dial-code="{{ $country['dial_code'] }}">{{ $country['name'] }} ({{ $country['dial_code'] }})</option>@endforeach</select></div>
+                                <input type="text" class="form-control" name="handphone" id="handphone_edit" inputmode="numeric" pattern="[0-9]*" placeholder="81398238734">
+                            </div>
+                            <small class="form-text text-muted">Pilih negara, lalu isi nomor lokal tanpa kode negara.</small>
                             <div id="error_handphone_edit" class="invalid-feedback"></div>
                         </div>
                         <div class="form-group">
@@ -148,6 +156,8 @@
         $(document).ready(function() {
             $('#jk_add').select2({width: '100%', placeholder: 'Pilih', dropdownParent: $('#modal_add')});
             $('#jk_edit').select2({width: '100%', placeholder: 'Pilih', dropdownParent: $('#modal_edit')});
+            $('#handphone_country_add').select2({width: '100%', dropdownParent: $('#modal_add')});
+            $('#handphone_country_edit').select2({width: '100%', dropdownParent: $('#modal_edit')});
         });
 
         var datatable = $("#table-1").DataTable({
@@ -221,7 +231,12 @@
             var rowData = JSON.parse(decodeURIComponent(data));
             $("#id_edit").val(rowData.id);
             $("#customer_edit").val(rowData.customer);
-            $("#handphone_edit").val(rowData.handphone);
+            var country = rowData.handphone_country || 'ID';
+            $("#handphone_country_edit").val(country).trigger('change');
+            var dialCode = $('#handphone_country_edit option:selected').data('dial-code') || '+62';
+            var phoneValue = rowData.handphone || '';
+            if (phoneValue.indexOf(dialCode) === 0) phoneValue = phoneValue.substring(dialCode.length);
+            $("#handphone_edit").val(phoneValue.replace(/^0/, ''));
             $("#asal_edit").val(rowData.asal);
             $("#jk_edit").val(rowData.jk).change();
             $("#modal_edit").modal("show");

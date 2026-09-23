@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Area;
 use App\Http\Controllers\Controller;
 use App\Models\Client;
 use App\Models\Task;
+use App\Support\CountryList;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -19,6 +20,7 @@ class ClientController extends BaseController
         $this->loadThemePreferences($data);
         $data['title'] = 'Data Client';
         $data['page'] = 'client';
+        $data['countries'] = CountryList::all();
         return view('area.client', $data);
     }
 
@@ -55,12 +57,25 @@ class ClientController extends BaseController
 
     public function add(Request $request)
     {
-        request()->validate([
+        $validated = $request->validate([
             'customer' => 'required',
             'jk' => 'required',
+            'handphone_country' => 'nullable|string|size:2',
+            'handphone' => ['nullable', 'string', 'max:255', function ($attribute, $value, $fail) {
+                if ($value !== null && $value !== '' && !in_array(trim((string) $value), ['0', '-'], true) && !Client::normalizeHandphone($value, $request->input('handphone_country', 'ID'))) {
+                    $fail('Nomor handphone harus berupa nomor Indonesia yang valid.');
+                }
+            }],
+            'asal' => 'nullable|string|max:255',
         ]);
 
-        $data = $request->all();
+        $data = [
+            'handphone_country' => $validated['handphone_country'] ?? 'ID',
+            'handphone' => $validated['handphone'] ?? null,
+            'customer' => $validated['customer'],
+            'jk' => $validated['jk'],
+            'asal' => $validated['asal'] ?? null,
+        ];
         $data['user_id'] = Auth::user()->id;
 
         try {
@@ -83,12 +98,27 @@ class ClientController extends BaseController
 
     public function edit(Request $request)
     {
-        request()->validate([
+        $validated = $request->validate([
+            'id' => 'required|exists:client,id',
             'customer' => 'required',
             'jk' => 'required',
+            'handphone_country' => 'nullable|string|size:2',
+            'handphone' => ['nullable', 'string', 'max:255', function ($attribute, $value, $fail) {
+                if ($value !== null && $value !== '' && !in_array(trim((string) $value), ['0', '-'], true) && !Client::normalizeHandphone($value, $request->input('handphone_country', 'ID'))) {
+                    $fail('Nomor handphone harus berupa nomor Indonesia yang valid.');
+                }
+            }],
+            'asal' => 'nullable|string|max:255',
         ]);
 
-        $data = $request->all();
+        $data = [
+            'handphone_country' => $validated['handphone_country'] ?? 'ID',
+            'handphone' => $validated['handphone'] ?? null,
+            'customer' => $validated['customer'],
+            'jk' => $validated['jk'],
+            'asal' => $validated['asal'] ?? null,
+        ];
+        unset($data['id']);
 
         try {
             DB::beginTransaction();

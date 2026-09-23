@@ -92,6 +92,9 @@
                         <li class="menu-header">Main</li>
                         <li class="{{ ($page ?? '') === 'dashboard' ? 'active' : '' }}"><a href="{{ url('dashboard') }}" class="nav-link"><i data-feather="monitor"></i><span>Dashboard</span></a></li>
                         <li class="{{ ($page ?? '') === 'calendar' ? 'active' : '' }}"><a href="{{ url('calendar') }}" class="nav-link"><i data-feather="calendar"></i><span>Kalender</span></a></li>
+                        @if (Auth::user()->role === 'Admin')
+                            <li class="{{ ($page ?? '') === 'task-request' ? 'active' : '' }}"><a href="{{ url('task-request') }}" class="nav-link"><i data-feather="inbox"></i><span>Request Task From Client</span></a></li>
+                        @endif
                         <li class="dropdown {{ ($page ?? '') === 'task' ? 'active' : '' }}">
                             <a href="#" class="menu-toggle nav-link has-dropdown"><i data-feather="briefcase"></i><span>Task</span></a>
                             <ul class="dropdown-menu">

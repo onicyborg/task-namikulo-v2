@@ -8,6 +8,7 @@ use App\Http\Controllers\Area\TaskCategoryController;
 use App\Http\Controllers\Area\WorkerController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\Area\ProfilController;
+use App\Http\Controllers\TaskDraftController;
 use App\Http\Controllers\ThemePreferenceController;
 use Illuminate\Support\Facades\Route;
 
@@ -66,6 +67,11 @@ Route::group(['middleware' => ['auth', 'preventBackHistory']], function () {
             Route::post('/task-category/add', [TaskCategoryController::class, 'add']);
             Route::post('/task-category/edit', [TaskCategoryController::class, 'edit']);
             Route::post('/task-category/delete', [TaskCategoryController::class, 'delete']);
+
+            Route::get('/task-request', [TaskDraftController::class, 'adminIndex']);
+            Route::get('/task-request/list', [TaskDraftController::class, 'list']);
+            Route::get('/task-request/detail/{id}', [TaskDraftController::class, 'detail']);
+            Route::post('/task-request/{id}/assign', [TaskDraftController::class, 'assign']);
         });
 
         Route::get('/calendar', [CalendarController::class, 'index']);
@@ -77,3 +83,7 @@ Route::group(['middleware' => ['auth', 'preventBackHistory']], function () {
         Route::post('/theme/preferences', [ThemePreferenceController::class, 'update']);
     });
 });
+
+Route::get('/request-task', [TaskDraftController::class, 'create']);
+Route::get('/request-task/client-lookup', [TaskDraftController::class, 'lookupClient']);
+Route::post('/request-task', [TaskDraftController::class, 'store']);
