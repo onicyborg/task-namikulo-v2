@@ -1,5 +1,49 @@
 @extends('area._base')
 @push('head')
+    <style>
+        .country-flag { flex: 0 0 auto; display: block; object-fit: cover; border-radius: 3px; box-shadow: 0 0 0 1px rgba(18,38,58,.12); }
+        .select2-container--default .select2-dropdown {
+            min-width: 210px;
+            border: 1px solid #dce6ef;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 16px 34px rgba(18,38,58,.16);
+        }
+        .select2-container--default .select2-search--dropdown { padding: 10px; background: #fff; }
+        .select2-container--default .select2-search--dropdown .select2-search__field {
+            height: 38px;
+            border: 1px solid #dce6ef;
+            border-radius: 9px;
+            padding: 0 11px;
+            color: #12263a;
+            font-size: 14px;
+            outline: none;
+        }
+        .select2-container--default .select2-search--dropdown .select2-search__field:focus { border-color: #1464f4; box-shadow: 0 0 0 3px rgba(20,100,244,.12); }
+        .select2-container--default .select2-results__option { min-height: 42px; padding: 10px 12px; color: #12263a; font-size: 14px; }
+        .select2-container--default .select2-results__option--highlighted[aria-selected] { background: #1464f4; color: #fff; }
+        .select2-container--default .select2-results__option[aria-selected=true] { background: #eef4ff; color: #0b4ec7; font-weight: 700; }
+        .modal .input-group { display: flex; align-items: stretch; flex-wrap: nowrap; }
+        .modal .input-group > .form-control { min-width: 0; border-top-left-radius: 0; border-bottom-left-radius: 0; }
+        .country-picker { position: relative; display: flex; flex: 0 0 148px; min-width: 148px !important; }
+        .country-native-select { display: none !important; }
+        .country-picker-trigger { flex: 1 1 auto; width: 100%; height: auto; min-height: 100%; display: flex; align-items: center; gap: 9px; padding: 0 30px 0 14px; position: relative; border: 1px solid #dce6ef; border-right: 0; border-radius: 12px 0 0 12px; background: #f5f9fc; color: #12263a; font: 700 14px/1 'DM Sans', sans-serif; cursor: pointer; text-align: left; }
+        .country-picker-trigger:hover, .country-picker-trigger[aria-expanded=true] { background: #eef4ff; border-color: #1464f4; }
+        .country-picker-trigger:focus-visible { outline: 3px solid rgba(20,100,244,.18); outline-offset: 1px; z-index: 1; }
+        .country-picker-trigger::after { content: ''; width: 7px; height: 7px; position: absolute; right: 12px; top: 50%; border-right: 1.5px solid #6b7c8f; border-bottom: 1.5px solid #6b7c8f; transform: translateY(-70%) rotate(45deg); transition: transform .15s ease; }
+        .country-picker-trigger[aria-expanded=true]::after { transform: translateY(-30%) rotate(225deg); }
+        .country-picker-popover { position: fixed; width: 260px; max-height: min(360px, calc(100vh - 24px)); display: flex; flex-direction: column; z-index: 2100; overflow: hidden; border: 1px solid #dce6ef; border-radius: 14px; background: #fff; box-shadow: 0 18px 42px rgba(18,38,58,.2); }
+        .country-picker-search-wrap { padding: 10px; border-bottom: 1px solid #eef2f6; background: #fff; }
+        .country-picker-search { width: 100%; height: 40px; border: 1px solid #dce6ef; border-radius: 9px; padding: 0 12px; color: #12263a; font: 14px 'DM Sans', sans-serif; outline: none; }
+        .country-picker-search:focus { border-color: #1464f4; box-shadow: 0 0 0 3px rgba(20,100,244,.12); }
+        .country-picker-list { overflow-y: auto; padding: 5px; overscroll-behavior: contain; }
+        .country-picker-option { width: 100%; min-height: 42px; display: flex; align-items: center; gap: 10px; border: 0; border-radius: 8px; padding: 9px 10px; background: transparent; color: #12263a; font: 14px/1.2 'DM Sans', sans-serif; cursor: pointer; text-align: left; }
+        .country-picker-option:hover, .country-picker-option.is-selected { background: #eef4ff; color: #0b4ec7; font-weight: 700; }
+        .country-picker-option:focus-visible { outline: 2px solid #1464f4; outline-offset: -2px; }
+        .country-picker-option .country-flag { width: 28px; height: 18px; }
+        .country-picker-empty { padding: 16px 12px; color: #6b7c8f; font-size: 13px; text-align: center; }
+        @media (max-width: 575px) { .country-picker { flex-basis: 128px; min-width: 128px !important; } .country-picker-trigger { padding-left: 10px; font-size: 13px; } }
+    </style>
 @endpush
 @section('content')
     <div class="page-header">
@@ -64,7 +108,7 @@
                         <div class="form-group">
                             <label class="form-label">Handphone</label>
                             <div class="input-group">
-                                <div class="input-group-prepend" style="min-width: 175px;"><select name="handphone_country" id="handphone_country_add" class="form-control" aria-label="Kode negara">@foreach ($countries as $country)<option value="{{ $country['code'] }}" data-dial-code="{{ $country['dial_code'] }}" @selected($country['code'] === 'ID')>{{ $country['name'] }} ({{ $country['dial_code'] }})</option>@endforeach</select></div>
+                                <div class="input-group-prepend country-picker" data-country-picker><select name="handphone_country" id="handphone_country_add" class="country-native-select" aria-label="Negara nomor telepon">@foreach ($countries as $country)<option value="{{ $country['code'] }}" data-country-name="{{ $country['name'] }}" data-dial-code="{{ $country['dial_code'] }}" @selected($country['code'] === 'ID')>{{ $country['name'] }} {{ $country['dial_code'] }}</option>@endforeach</select></div>
                                 <input type="text" class="form-control" name="handphone" id="handphone_add" inputmode="numeric" pattern="[0-9]*" placeholder="81398238734">
                             </div>
                             <small class="form-text text-muted">Pilih negara, lalu isi nomor lokal tanpa kode negara.</small>
@@ -119,7 +163,7 @@
                         <div class="form-group">
                             <label class="form-label">Handphone</label>
                             <div class="input-group">
-                                <div class="input-group-prepend" style="min-width: 175px;"><select name="handphone_country" id="handphone_country_edit" class="form-control" aria-label="Kode negara">@foreach ($countries as $country)<option value="{{ $country['code'] }}" data-dial-code="{{ $country['dial_code'] }}">{{ $country['name'] }} ({{ $country['dial_code'] }})</option>@endforeach</select></div>
+                                <div class="input-group-prepend country-picker" data-country-picker><select name="handphone_country" id="handphone_country_edit" class="country-native-select" aria-label="Negara nomor telepon">@foreach ($countries as $country)<option value="{{ $country['code'] }}" data-country-name="{{ $country['name'] }}" data-dial-code="{{ $country['dial_code'] }}">{{ $country['name'] }} {{ $country['dial_code'] }}</option>@endforeach</select></div>
                                 <input type="text" class="form-control" name="handphone" id="handphone_edit" inputmode="numeric" pattern="[0-9]*" placeholder="81398238734">
                             </div>
                             <small class="form-text text-muted">Pilih negara, lalu isi nomor lokal tanpa kode negara.</small>
@@ -140,7 +184,7 @@
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
-                            <button type="submmit" id="btn_edit" class="btn btn-primary">
+                            <button type="submit" id="btn_edit" class="btn btn-primary">
                                 <i data-feather="save" style="width: 16px; height: 16px; vertical-align: middle; margin-right: 4px;"></i>
                                 Simpan
                             </button>
@@ -156,8 +200,96 @@
         $(document).ready(function() {
             $('#jk_add').select2({width: '100%', placeholder: 'Pilih', dropdownParent: $('#modal_add')});
             $('#jk_edit').select2({width: '100%', placeholder: 'Pilih', dropdownParent: $('#modal_edit')});
-            $('#handphone_country_add').select2({width: '100%', dropdownParent: $('#modal_add')});
-            $('#handphone_country_edit').select2({width: '100%', dropdownParent: $('#modal_edit')});
+            var flagUrl = function(code) { return 'https://flagcdn.com/w40/' + String(code).toLowerCase() + '.png'; };
+            var countryPickers = [];
+            var closeCountryPickers = function(except) {
+                countryPickers.forEach(function(picker) { if (picker !== except) picker.close(); });
+            };
+            var initCountryPicker = function(select) {
+                var wrapper = select.closest('[data-country-picker]');
+                var trigger = document.createElement('button');
+                trigger.type = 'button';
+                trigger.className = 'country-picker-trigger';
+                trigger.setAttribute('aria-haspopup', 'listbox');
+                trigger.setAttribute('aria-expanded', 'false');
+                trigger.setAttribute('aria-label', 'Pilih negara nomor telepon');
+                wrapper.appendChild(trigger);
+
+                var popover = document.createElement('div');
+                popover.className = 'country-picker-popover';
+                popover.setAttribute('role', 'dialog');
+                popover.setAttribute('aria-label', 'Daftar negara');
+                var searchWrap = document.createElement('div');
+                searchWrap.className = 'country-picker-search-wrap';
+                var search = document.createElement('input');
+                search.type = 'search';
+                search.className = 'country-picker-search';
+                search.placeholder = 'Cari negara atau kode...';
+                search.setAttribute('aria-label', 'Cari negara atau kode negara');
+                searchWrap.appendChild(search);
+                var list = document.createElement('div');
+                list.className = 'country-picker-list';
+                list.setAttribute('role', 'listbox');
+                popover.appendChild(searchWrap);
+                popover.appendChild(list);
+                document.body.appendChild(popover);
+
+                var getOptions = function() { return Array.prototype.slice.call(select.options); };
+                var updateTrigger = function() {
+                    var option = select.options[select.selectedIndex];
+                    if (!option) return;
+                    trigger.replaceChildren();
+                    var img = document.createElement('img');
+                    img.className = 'country-flag'; img.width = 28; img.height = 18; img.alt = '';
+                    img.src = flagUrl(option.value);
+                    var code = document.createElement('span');
+                    code.textContent = option.dataset.dialCode || option.textContent;
+                    trigger.appendChild(img); trigger.appendChild(code);
+                    trigger.title = option.dataset.countryName || option.textContent;
+                };
+                var renderOptions = function(query) {
+                    list.replaceChildren();
+                    var needle = String(query || '').trim().toLowerCase();
+                    var matches = getOptions().filter(function(option) {
+                        var searchable = (option.dataset.countryName || '') + ' ' + (option.dataset.dialCode || '') + ' ' + option.value;
+                        return searchable.toLowerCase().indexOf(needle) !== -1;
+                    });
+                    if (!matches.length) {
+                        var empty = document.createElement('div'); empty.className = 'country-picker-empty'; empty.textContent = 'Negara tidak ditemukan'; list.appendChild(empty); return;
+                    }
+                    matches.forEach(function(option) {
+                        var item = document.createElement('button');
+                        item.type = 'button'; item.className = 'country-picker-option'; item.setAttribute('role', 'option');
+                        item.setAttribute('aria-selected', option.value === select.value ? 'true' : 'false');
+                        if (option.value === select.value) item.classList.add('is-selected');
+                        var img = document.createElement('img'); img.className = 'country-flag'; img.width = 28; img.height = 18; img.alt = ''; img.src = flagUrl(option.value);
+                        var code = document.createElement('span'); code.textContent = option.dataset.dialCode || option.textContent;
+                        item.appendChild(img); item.appendChild(code);
+                        item.title = option.dataset.countryName || option.textContent;
+                        item.addEventListener('click', function() { select.value = option.value; select.dispatchEvent(new Event('change', {bubbles: true})); picker.close(); trigger.focus(); });
+                        list.appendChild(item);
+                    });
+                };
+                var position = function() {
+                    var rect = trigger.getBoundingClientRect();
+                    popover.style.left = Math.max(12, Math.min(rect.left, window.innerWidth - popover.offsetWidth - 12)) + 'px';
+                    popover.style.top = (rect.bottom + 6) + 'px';
+                    var popoverRect = popover.getBoundingClientRect();
+                    if (popoverRect.bottom > window.innerHeight - 12 && rect.top - popoverRect.height - 6 > 12) popover.style.top = (rect.top - popoverRect.height - 6) + 'px';
+                };
+                var picker = { close: function() { popover.hidden = true; trigger.setAttribute('aria-expanded', 'false'); } };
+                var open = function() { closeCountryPickers(picker); popover.hidden = false; search.value = ''; renderOptions(''); position(); trigger.setAttribute('aria-expanded', 'true'); requestAnimationFrame(function() { position(); search.focus(); }); };
+                trigger.addEventListener('click', function() { popover.hidden ? open() : picker.close(); });
+                search.addEventListener('input', function() { renderOptions(search.value); });
+                search.addEventListener('keydown', function(event) { if (event.key === 'Escape') { picker.close(); trigger.focus(); } });
+                window.addEventListener('resize', function() { if (!popover.hidden) position(); });
+                window.addEventListener('scroll', function() { if (!popover.hidden) position(); }, true);
+                document.addEventListener('click', function(event) { if (!wrapper.contains(event.target) && !popover.contains(event.target)) picker.close(); });
+                select.addEventListener('change', function() { updateTrigger(); if (!popover.hidden) renderOptions(search.value); });
+                popover.hidden = true; updateTrigger(); countryPickers.push(picker);
+            };
+            initCountryPicker(document.getElementById('handphone_country_add'));
+            initCountryPicker(document.getElementById('handphone_country_edit'));
         });
 
         var datatable = $("#table-1").DataTable({
