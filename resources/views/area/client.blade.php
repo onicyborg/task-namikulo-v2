@@ -109,9 +109,9 @@
                             <label class="form-label">Handphone</label>
                             <div class="input-group">
                                 <div class="input-group-prepend country-picker" data-country-picker><select name="handphone_country" id="handphone_country_add" class="country-native-select" aria-label="Negara nomor telepon">@foreach ($countries as $country)<option value="{{ $country['code'] }}" data-country-name="{{ $country['name'] }}" data-dial-code="{{ $country['dial_code'] }}" @selected($country['code'] === 'ID')>{{ $country['name'] }} {{ $country['dial_code'] }}</option>@endforeach</select></div>
-                                <input type="text" class="form-control" name="handphone" id="handphone_add" inputmode="numeric" pattern="[0-9]*" placeholder="81398238734">
+                                <input type="text" class="form-control" name="handphone" id="handphone_add" inputmode="tel" pattern="[0-9-]*" placeholder="81398238734 atau 813-9823-8734" aria-describedby="handphone_help_add">
                             </div>
-                            <small class="form-text text-muted">Pilih negara, lalu isi nomor lokal tanpa kode negara.</small>
+                            <small id="handphone_help_add" class="form-text text-muted">Isi nomor lokal tanpa kode negara. Tanda pemisah "-" bersifat opsional.</small>
                             <div id="error_handphone_add" class="invalid-feedback"></div>
                         </div>
                         <div class="form-group">
@@ -164,9 +164,9 @@
                             <label class="form-label">Handphone</label>
                             <div class="input-group">
                                 <div class="input-group-prepend country-picker" data-country-picker><select name="handphone_country" id="handphone_country_edit" class="country-native-select" aria-label="Negara nomor telepon">@foreach ($countries as $country)<option value="{{ $country['code'] }}" data-country-name="{{ $country['name'] }}" data-dial-code="{{ $country['dial_code'] }}">{{ $country['name'] }} {{ $country['dial_code'] }}</option>@endforeach</select></div>
-                                <input type="text" class="form-control" name="handphone" id="handphone_edit" inputmode="numeric" pattern="[0-9]*" placeholder="81398238734">
+                                <input type="text" class="form-control" name="handphone" id="handphone_edit" inputmode="tel" pattern="[0-9-]*" placeholder="81398238734 atau 813-9823-8734" aria-describedby="handphone_help_edit">
                             </div>
-                            <small class="form-text text-muted">Pilih negara, lalu isi nomor lokal tanpa kode negara.</small>
+                            <small id="handphone_help_edit" class="form-text text-muted">Isi nomor lokal tanpa kode negara. Tanda pemisah "-" bersifat opsional.</small>
                             <div id="error_handphone_edit" class="invalid-feedback"></div>
                         </div>
                         <div class="form-group">

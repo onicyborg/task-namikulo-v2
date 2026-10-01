@@ -57,11 +57,15 @@ class ClientController extends BaseController
 
     public function add(Request $request)
     {
+        $request->merge([
+            'handphone' => $this->cleanHandphone($request->input('handphone')),
+        ]);
+
         $validated = $request->validate([
             'customer' => 'required',
             'jk' => 'required',
             'handphone_country' => 'nullable|string|size:2',
-            'handphone' => ['nullable', 'string', 'max:255', function ($attribute, $value, $fail) {
+            'handphone' => ['nullable', 'string', 'max:255', function ($attribute, $value, $fail) use ($request) {
                 if ($value !== null && $value !== '' && !in_array(trim((string) $value), ['0', '-'], true) && !Client::normalizeHandphone($value, $request->input('handphone_country', 'ID'))) {
                     $fail('Nomor handphone harus berupa nomor Indonesia yang valid.');
                 }
@@ -71,7 +75,10 @@ class ClientController extends BaseController
 
         $data = [
             'handphone_country' => $validated['handphone_country'] ?? 'ID',
-            'handphone' => $validated['handphone'] ?? null,
+            'handphone' => Client::normalizeHandphone(
+                $validated['handphone'] ?? null,
+                $validated['handphone_country'] ?? 'ID'
+            ),
             'customer' => $validated['customer'],
             'jk' => $validated['jk'],
             'asal' => $validated['asal'] ?? null,
@@ -98,12 +105,16 @@ class ClientController extends BaseController
 
     public function edit(Request $request)
     {
+        $request->merge([
+            'handphone' => $this->cleanHandphone($request->input('handphone')),
+        ]);
+
         $validated = $request->validate([
             'id' => 'required|exists:client,id',
             'customer' => 'required',
             'jk' => 'required',
             'handphone_country' => 'nullable|string|size:2',
-            'handphone' => ['nullable', 'string', 'max:255', function ($attribute, $value, $fail) {
+            'handphone' => ['nullable', 'string', 'max:255', function ($attribute, $value, $fail) use ($request) {
                 if ($value !== null && $value !== '' && !in_array(trim((string) $value), ['0', '-'], true) && !Client::normalizeHandphone($value, $request->input('handphone_country', 'ID'))) {
                     $fail('Nomor handphone harus berupa nomor Indonesia yang valid.');
                 }
@@ -113,7 +124,10 @@ class ClientController extends BaseController
 
         $data = [
             'handphone_country' => $validated['handphone_country'] ?? 'ID',
-            'handphone' => $validated['handphone'] ?? null,
+            'handphone' => Client::normalizeHandphone(
+                $validated['handphone'] ?? null,
+                $validated['handphone_country'] ?? 'ID'
+            ),
             'customer' => $validated['customer'],
             'jk' => $validated['jk'],
             'asal' => $validated['asal'] ?? null,
@@ -136,6 +150,15 @@ class ClientController extends BaseController
         }
 
         return response()->json($response);
+    }
+
+    private function cleanHandphone(?string $value): ?string
+    {
+        if ($value === null) {
+            return null;
+        }
+
+        return preg_replace('/[\s-]+/', '', trim($value));
     }
 
     public function detail($id)
