@@ -82,8 +82,12 @@
                                 <input type="hidden" id="assign-id">
                                 <div class="row">
                                     <div class="col-md-4"><div class="form-group"><label for="worker_id">Worker <span class="text-danger">*</span></label><select id="worker_id" name="worker_id" class="form-control" required><option value="">Pilih worker</option>@foreach($workers as $worker)<option value="{{ $worker->id }}">{{ $worker->fullname }}</option>@endforeach</select></div></div>
-                                    <div class="col-md-4"><div class="form-group"><label for="price_order">Price Order</label><input id="price_order" name="price_order" type="number" min="0" class="form-control" placeholder="Opsional"></div></div>
-                                    <div class="col-md-4"><div class="form-group"><label for="pay_worker">Pay to Worker</label><input id="pay_worker" name="pay_worker" type="number" min="0" class="form-control" placeholder="Opsional"></div></div>
+                                    <div class="col-md-4"><div class="form-group"><label for="assign_order">Mulai Diproses <span class="text-danger">*</span></label><input id="assign_order" name="order" type="date" class="form-control" required></div></div>
+                                    <div class="col-md-4"><div class="form-group"><label for="assign_deadline">Target Selesai <span class="text-danger">*</span></label><input id="assign_deadline" name="deadline" type="date" class="form-control" required><small class="form-text text-muted">Tanggal tidak boleh sebelum mulai diproses.</small></div></div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6"><div class="form-group"><label for="price_order">Price Order</label><input id="price_order" name="price_order" type="number" min="0" class="form-control" placeholder="Opsional"></div></div>
+                                    <div class="col-md-6"><div class="form-group"><label for="pay_worker">Pay to Worker</label><input id="pay_worker" name="pay_worker" type="number" min="0" class="form-control" placeholder="Opsional"></div></div>
                                 </div>
                                 <div id="assign-title-wrap" class="form-group d-none"><label for="assign_judul">Judul penelitian <span class="text-danger">*</span></label><textarea id="assign_judul" name="judul" class="form-control" rows="2" placeholder="Isi judul setelah dikonfirmasi dengan client"></textarea><small class="form-text text-muted">Judul Metopen wajib dilengkapi sebelum request di-assign ke worker.</small></div>
                                 <div id="assigned-task-meta" class="row d-none">
@@ -130,14 +134,14 @@
             $('#task-request-table').on('click', '.js-detail', function() {
                 var id = $(this).data('id');
                 $('#assign-id').val(id); $('#detail-category').text('Memuat kategori...'); $('#detail-content').html('<div class="text-center p-4">Memuat detail...</div>');
-                $('#assign-form')[0].reset(); $('#worker_id').val('').prop('disabled', false).trigger('change'); $('#price_order, #pay_worker').prop('readonly', false); $('#assign-title-wrap').addClass('d-none'); $('#assign_judul').prop('required', false).prop('disabled', false); $('#assigned-task-meta').addClass('d-none'); $('#assign-button').show(); $('#assignment-section-title').text('Assign ke Worker'); $('#request-detail-modal').modal('show');
+                $('#assign-form')[0].reset(); $('#worker_id').val('').prop('disabled', false).trigger('change'); $('#assign_order, #assign_deadline').prop('disabled', false); $('#assign_deadline').removeAttr('min'); $('#price_order, #pay_worker').prop('readonly', false); $('#assign-title-wrap').addClass('d-none'); $('#assign_judul').prop('required', false).prop('disabled', false); $('#assigned-task-meta').addClass('d-none'); $('#assign-button').show(); $('#assignment-section-title').text('Assign ke Worker'); $('#request-detail-modal').modal('show');
 
                 $.get('{{ url('task-request/detail') }}/' + id, function(response) {
                     var draft = response.draft, client = draft.client || {}, category = draft.category || {}, whatsapp = (client.handphone || '').replace(/[^0-9]/g, '');
                     var needsMetopenTitle = category.tipe === 'metopen', assigned = draft.status === 'assigned', assignedTask = draft.task || {}, academic = assignedTask.academic || {};
                     $('#assign-title-wrap').toggleClass('d-none', !needsMetopenTitle); $('#assign_judul').val(academic.judul || draft.judul || '').prop('required', needsMetopenTitle).prop('disabled', assigned);
                     if (assigned) {
-                        $('#assignment-section-title').text('Data Assignment'); $('#assign-button').hide(); $('#worker_id').val(assignedTask.worker_id || '').trigger('change').prop('disabled', true); $('#price_order').val(assignedTask.price_order ?? 0).prop('readonly', true); $('#pay_worker').val(assignedTask.pay_worker ?? 0).prop('readonly', true); $('#assigned_task_code').val(assignedTask.kode_task || '-'); $('#assigned_task_status').val(assignedTask.task_status || '-'); $('#assigned_pay_status').val(assignedTask.pay_status || '-'); $('#assigned_at').val(draft.assigned_at || '-'); $('#assigned-task-meta').removeClass('d-none');
+                        $('#assignment-section-title').text('Data Assignment'); $('#assign-button').hide(); $('#worker_id').val(assignedTask.worker_id || '').trigger('change').prop('disabled', true); $('#assign_order').val(assignedTask.order || draft.order || '').prop('disabled', true); $('#assign_deadline').val(assignedTask.deadline || draft.deadline || '').prop('disabled', true); $('#price_order').val(assignedTask.price_order ?? 0).prop('readonly', true); $('#pay_worker').val(assignedTask.pay_worker ?? 0).prop('readonly', true); $('#assigned_task_code').val(assignedTask.kode_task || '-'); $('#assigned_task_status').val(assignedTask.task_status || '-'); $('#assigned_pay_status').val(assignedTask.pay_status || '-'); $('#assigned_at').val(draft.assigned_at || '-'); $('#assigned-task-meta').removeClass('d-none');
                     }
                     $('#detail-category').text(category.nama || 'Kategori tidak tersedia');
                     $('#detail-content').html(
@@ -147,8 +151,6 @@
                         '<div class="info-row"><span class="info-label">Kode Request</span><span class="info-value">' + escapeHtml(draft.kode_request || '-') + '</span></div></div></div></div>' +
                         '<div class="detail-info-card mt-3 mb-0"><div class="detail-info-header"><i data-feather="clipboard"></i><h4>Informasi Request</h4></div><div class="detail-info-body"><div class="info-list">' +
                         '<div class="info-row"><span class="info-label">Kategori</span><span class="info-value">' + escapeHtml(category.nama || '-') + '</span></div>' +
-                        '<div class="info-row"><span class="info-label">Tanggal Mulai</span><span class="info-value">' + escapeHtml(draft.order || '-') + '</span></div>' +
-                        '<div class="info-row"><span class="info-label">Deadline</span><span class="info-value">' + escapeHtml(draft.deadline || '-') + '</span></div>' +
                         '<div class="info-row"><span class="info-label">Deskripsi</span><span class="info-value">' + escapeHtml(draft.task || '-') + '</span></div>' +
                         (draft.prodi ? '<div class="info-row"><span class="info-label">Program Studi</span><span class="info-value">' + escapeHtml(draft.prodi) + '</span></div>' : '') +
                         (draft.judul ? '<div class="info-row"><span class="info-label">Judul</span><span class="info-value">' + escapeHtml(draft.judul) + '</span></div>' : (category.tipe === 'metopen' ? '<div class="info-row"><span class="info-label">Judul</span><span class="info-value text-warning">Belum ditentukan — isi sebelum assign</span></div>' : '')) +
@@ -160,6 +162,10 @@
             });
 
             function escapeHtml(value) { return $('<div>').text(value || '').html(); }
+
+            $('#assign_order').on('change', function() {
+                $('#assign_deadline').attr('min', this.value);
+            });
 
             $('#assign-form').on('submit', function(event) {
                 event.preventDefault();

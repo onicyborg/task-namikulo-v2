@@ -52,8 +52,6 @@ class TaskDraftController extends BaseController
             'asal' => 'nullable|string|max:255',
             'category_id' => 'required|exists:task_category,id',
             'task' => 'required|string',
-            'order' => 'required|date',
-            'deadline' => 'nullable|date|after_or_equal:order',
             'prodi' => 'nullable|string|max:255',
             'judul' => 'nullable|string',
             'keterangan' => 'nullable|string',
@@ -105,8 +103,8 @@ class TaskDraftController extends BaseController
                 'category_id' => $category->id,
                 'kode_request' => 'RQ' . date('Ymd') . strtoupper(Str::random(5)),
                 'task' => $validated['task'],
-                'order' => $validated['order'],
-                'deadline' => $validated['deadline'] ?? null,
+                'order' => null,
+                'deadline' => null,
                 'prodi' => $validated['prodi'] ?? null,
                 'judul' => $validated['judul'] ?? null,
                 'keterangan' => $validated['keterangan'] ?? null,
@@ -163,6 +161,8 @@ class TaskDraftController extends BaseController
     {
         $validated = $request->validate([
             'worker_id' => 'required|exists:users,id',
+            'order' => 'required|date',
+            'deadline' => 'required|date|after_or_equal:order',
             'price_order' => 'nullable|numeric|min:0',
             'pay_worker' => 'nullable|numeric|min:0',
             'judul' => 'nullable|string',
@@ -189,8 +189,8 @@ class TaskDraftController extends BaseController
                 'category_id' => $draft->category_id,
                 'kode_task' => 'TS' . date('Ymd') . sprintf('%03d', $count + 1),
                 'task' => $draft->task,
-                'order' => $draft->order,
-                'deadline' => $draft->deadline,
+                'order' => $validated['order'],
+                'deadline' => $validated['deadline'],
                 'price_order' => $priceOrder,
                 'pay_worker' => $payWorker,
                 'margin' => $priceOrder - $payWorker,
@@ -209,7 +209,15 @@ class TaskDraftController extends BaseController
                 ]);
             }
 
-            $draft->update(['task_id' => $task->id, 'judul' => $academicTitle, 'status' => 'assigned', 'assigned_at' => now(), 'assigned_by' => Auth::id()]);
+            $draft->update([
+                'task_id' => $task->id,
+                'judul' => $academicTitle,
+                'order' => $validated['order'],
+                'deadline' => $validated['deadline'],
+                'status' => 'assigned',
+                'assigned_at' => now(),
+                'assigned_by' => Auth::id(),
+            ]);
             DB::commit();
 
             return response()->json(['status' => 1, 'msg' => 'Request berhasil di-assign ke worker.']);
